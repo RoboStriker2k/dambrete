@@ -12,7 +12,7 @@ height=600
 
 # speles iestatijumi
 SpelesLaukumaIzmers=8
-
+kvadrataizmers=height/SpelesLaukumaIzmers
 
 # Virzienu definicija
 KA="KA" # kreisais augšejais
@@ -25,13 +25,19 @@ pygame.init()
 screen=pygame.display.set_mode((width,height))
 pygame.display.set_caption('Dambrete')
 clock=pygame.time.Clock()
-laukums=pygame.Surface((600,600)) # W H
-panelis2=pygame.Surface((200,600))
+laukums=pygame.Surface((height,height)) # W H
+kvadra=pygame.Surface((kvadrataizmers,kvadrataizmers)) # W H
+kvadra.fill('white')
+panelis2=pygame.Surface((width-height,height))
 font1=pygame.font.Font(None,50)   
 teksts=font1.render('Dambrete',False,'black')
 
+
 def main():
-    Running= True
+    Running= True #Mainigais ar kuru vares partraukt programams darbibu patraucot while loop
+
+    spele=Spele()
+
     while Running==True:
         grafika()
         krasojums()
@@ -43,13 +49,18 @@ def main():
             if event.type==pygame.QUIT:
                 pygame.quit()
                 Running= False
+                sys.exit()
+                
+# iekrāso kvadrātu laukumus                 
 def krasojums():
-    kvadrataizmers=height/SpelesLaukumaIzmers
-    
-    
-    print(kvadrataizmers) 
-         
-        
+    for x in range(SpelesLaukumaIzmers):
+            for y in range(SpelesLaukumaIzmers):    
+                    
+                if (x%2 !=0) and (y%2==0):
+                    screen.blit(kvadra,(kvadrataizmers*x,kvadrataizmers*y))
+                elif (x%2 ==0) and (y%2!=0):
+                    screen.blit(kvadra,(kvadrataizmers*x,kvadrataizmers*y))  
+# Nodrosina parejo grafikas laukumu      
 def grafika():
     screen.blit(laukums,(0,0))
     screen.blit(panelis2,(600,0))
@@ -58,15 +69,17 @@ def grafika():
     screen.blit(teksts,(600,10) )
         
 
+
     
-    
-class spele:
+class Spele:
     """
     Speles sakums
 
     """
-    def Sakuma_izkartojums ():
-        pass
+    def __init__(self):
+       self.galds1=Galds()
+ 
+       
         
     
     
@@ -87,9 +100,10 @@ class Galds:
                 elif (x%2 ==0) and (y%2!=0):
                     matrica[y][x]=laucins(Balts,kaulins(Balts))
                 elif (x%2==0) and (y%2 ==0):
-                    matrica[y][x]=laucins(Melns,kaulins(Melns))    
-                    
-        return matrica            
+                    matrica[y][x]=laucins(Melns,kaulins(Melns))             
+        return matrica
+    
+                
     def atgriezt_laukumu(self,galds):
         laukumavertibas=[[None]*SpelesLaukumaIzmers]*SpelesLaukumaIzmers            
         for x in range(SpelesLaukumaIzmers):
@@ -101,7 +115,9 @@ class Galds:
                 else:
                     laukumavertibas  [x][y]="Tukšs"      
         return laukumavertibas      
-    
+ 
+
+                  
     def lokacija(self,x,y):
         x=int(x)
         y=int(y)

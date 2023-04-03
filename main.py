@@ -111,7 +111,7 @@ class Galds:
             for y in range(3):
                 if matrica[x][y].krasa == Melns:
                     matrica[x][y].aiznemts = kaulins(Melns)
-            for y in range(5, 8):
+            for y in range(SpelesLaukumaIzmers-3, SpelesLaukumaIzmers):
                 if matrica[x][y].krasa == Melns:
                     matrica[x][y].aiznemts = kaulins(Balts)
 
@@ -152,7 +152,7 @@ class Galds:
 
     def apkartejie(self, x, y):
         return [self.relativitate(KA, x, y), self.relativitate(LA, x, y), self.relativitate(KZ, x, y), self.relativitate(LZ, x, y)]
-
+    
 
 ######################################## Kaulina definicija ############################################
 class kaulins:

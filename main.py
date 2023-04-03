@@ -7,6 +7,8 @@ from time import sleep
 #       R     G   B
 Balts = (255, 255, 255)
 Melns = (0,  0,  0)
+fonakrasa =(37,216,85)
+fons2krasa=(88,206,202)
 # logu izmers
 width = 800
 height = 600
@@ -33,12 +35,15 @@ panelis2 = pygame.Surface((width-height, height))
 font1 = pygame.font.Font(None, 50)
 teksts = font1.render('Dambrete', False, 'black')
 
-# importe attelus
+# importe attelus un parveido to izmeru
 SP1att=pygame.image.load('atteli/speletajs1.png')
 SP2att=pygame.image.load('atteli/speletajs2.png')
 SP1datt=pygame.image.load('atteli/speletajs1dama.png')
 SP2datt=pygame.image.load('atteli/speletajs2dama.png')
-
+SP1att=pygame.transform.scale(SP1att,(kvadrataizmers,kvadrataizmers))
+SP2att=pygame.transform.scale(SP2att,(kvadrataizmers,kvadrataizmers))
+SP1datt=pygame.transform.scale(SP1datt,(kvadrataizmers,kvadrataizmers))
+SP2datt=pygame.transform.scale(SP2datt,(kvadrataizmers,kvadrataizmers))
 def main():
     Running = True  # Mainigais ar kuru vares partraukt programams darbibu patraucot while loop
     
@@ -83,8 +88,8 @@ def krasojums():
 def grafika():
     screen.blit(laukums, (0, 0))
     screen.blit(panelis2, (600, 0))
-    laukums.fill('chocolate')
-    panelis2.fill('Red')
+    laukums.fill(fonakrasa)
+    panelis2.fill(fons2krasa)
     screen.blit(teksts, (600, 10))
 # attelo kauliņus uz laukuma    
 def grafKaul(matrica):
@@ -173,8 +178,38 @@ class Galds:
 
     def apkartejie(self, x, y):
         return [self.relativitate(KA, x, y), self.relativitate(LA, x, y), self.relativitate(KZ, x, y), self.relativitate(LZ, x, y)]
-    
+    def vienkarsakustiba(self,x,y):
 
+        if self.matrica[x][y].aiznemts!=None:
+            if self.matrica[x][y].aiznemts.dama==False and self.matrica[x][y].aiznemts.krasa==(255, 255, 255):
+                gajiens=[self.relativitate(KA,x,y),self.relativitate(LA,x,y)]
+            elif self.matrica[x][y].aiznemts.dama==False and self.matrica[x][y].aiznemts.krasa==(0, 0, 0):    
+                gajiens=[self.relativitate(KZ,x,y),self.relativitate(LZ,x,y)]
+            else:
+                gajiens=[self.relativitate(KZ,x,y),self.relativitate(LZ,x,y),self.relativitate(KA,x,y),self.relativitate(LA,x,y)]  
+        else:
+            gajiens=[]
+            
+        return gajiens
+    # Aizvieto kaulinu at tukšu vietu.
+    def NonemtKaulinu(self,x,y):
+        self.matrica[x][y].aiznemts=None
+    # Veic Kustību
+    def kustiba(self,x0,y0,x1,y1):\
+        m=self.matrica
+        
+        
+    def atlautieGajieni(self,x,y,lekt=False) :
+        VK=self.vienkarsakustiba(x,y)
+        AG=[]
+    
+    
+    def kronet(self,x,y):
+       if self.matrica[x][y].aiznemts!=None: 
+        if (self.matrica[x][y].aiznemts.krasa==(255,255,255) and y==0) or(self.matrica[x][y].azinemts.krasa==(0,0,0) and y==SpelesLaukumaIzmers):
+            self.matrica[x][y].aiznemts.dama()
+            
+                
 ######################################## Kaulina definicija ############################################
 class kaulins:
     def __init__(self, krasa, dama=False):

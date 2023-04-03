@@ -33,6 +33,11 @@ panelis2 = pygame.Surface((width-height, height))
 font1 = pygame.font.Font(None, 50)
 teksts = font1.render('Dambrete', False, 'black')
 
+# importe attelus
+SP1att=pygame.image.load('atteli/speletajs1.png')
+SP2att=pygame.image.load('atteli/speletajs2.png')
+SP1datt=pygame.image.load('atteli/speletajs1dama.png')
+SP2datt=pygame.image.load('atteli/speletajs2dama.png')
 
 def main():
     Running = True  # Mainigais ar kuru vares partraukt programams darbibu patraucot while loop
@@ -40,15 +45,18 @@ def main():
     spele = Spele()
     laukumavertibas1 = spele.galds1.atgriezt_laukumu()
     lauc=spele.galds1.matrica
+
+    """
     print(lauc[1][1].krasa,lauc[1][2].krasa)
     print(lauc[2][1].krasa,lauc[2][2].krasa)
-    print(lauc[1][1].aiznemts,lauc[1][2].aiznemts)
-    print(lauc[2][1].aiznemts,lauc[2][2].aiznemts)
-   
+    print(lauc[1][1].aiznemts.krasa,lauc[1][2].aiznemts)
+    print(lauc[2][1].aiznemts,lauc[2][2].aiznemts.krasa)
+   """
       
     while Running == True:
         grafika()
         krasojums()
+        grafKaul(lauc)
         pygame.display.update()
         clock.tick(60)
 
@@ -78,7 +86,20 @@ def grafika():
     laukums.fill('chocolate')
     panelis2.fill('Red')
     screen.blit(teksts, (600, 10))
-
+# attelo kauliņus uz laukuma    
+def grafKaul(matrica):
+    for x in range(SpelesLaukumaIzmers):
+        for y in range(SpelesLaukumaIzmers):
+         if matrica[x][y].aiznemts!=None:
+            if matrica[x][y].aiznemts.krasa==(255, 255, 255):
+                screen.blit(SP1att, (kvadrataizmers*x, kvadrataizmers*y))
+            elif matrica[x][y].aiznemts.krasa==(0,  0,  0):
+                screen.blit(SP2att, (kvadrataizmers*x, kvadrataizmers*y))  
+            else:
+      
+   
+                pass
+  
 
 class Spele:
     """
@@ -159,7 +180,7 @@ class kaulins:
     def __init__(self, krasa, dama=False):
         self.krasa = krasa
         self.dama = dama
-        self.vertiba = 1
+        self.vertiba = 1 
 
     def dama(self):
         self.dama = True

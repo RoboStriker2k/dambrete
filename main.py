@@ -50,14 +50,10 @@ def main():
     spele = Spele()
     laukumavertibas1 = spele.galds1.atgriezt_laukumu()
     lauc=spele.galds1.matrica
-
-    """
-    print(lauc[1][1].krasa,lauc[1][2].krasa)
-    print(lauc[2][1].krasa,lauc[2][2].krasa)
-    print(lauc[1][1].aiznemts.krasa,lauc[1][2].aiznemts)
-    print(lauc[2][1].aiznemts,lauc[2][2].aiznemts.krasa)
-   """
-      
+    print("Arpus glada check=",spele.galds1.ArPusGalda(0,2))
+    print("Atlautie gajieni=",spele.galds1.atlautieGajieni(0,2))
+    print("vispariga kustiba=",spele.galds1.vienkarsakustiba(0,2))    
+    print("matrica 1 1=",spele.galds1.lokacija(0,2).aiznemts)    
     while Running == True:
         grafika()
         krasojums()
@@ -137,9 +133,11 @@ class Galds:
             for y in range(3):
                 if matrica[x][y].krasa == Melns:
                     matrica[x][y].aiznemts = kaulins(Melns)
+                    #print(x,y,"melns") #printe kaulinu izvietojumu speles sakuma
             for y in range(SpelesLaukumaIzmers-3, SpelesLaukumaIzmers):
                 if matrica[x][y].krasa == Melns:
                     matrica[x][y].aiznemts = kaulins(Balts)
+                    #print(x,y,"balts") #printe kaulinu izvietojumu speles sakuma
 
         return matrica
 
@@ -175,9 +173,10 @@ class Galds:
                 return (x+1, y-1)
             case _:
                 return 0
-
+    #atgriez apkartejos laucinuss
     def apkartejie(self, x, y):
         return [self.relativitate(KA, x, y), self.relativitate(LA, x, y), self.relativitate(KZ, x, y), self.relativitate(LZ, x, y)]
+    #atgriez visus gajienus kaulinam
     def vienkarsakustiba(self,x,y):
 
         if self.matrica[x][y].aiznemts!=None:
@@ -191,18 +190,40 @@ class Galds:
             gajiens=[]
             
         return gajiens
+    # parbauda vai kordinate arpus galda 
+    def ArPusGalda (self,x,y):
+        if x<0 or y<0 or x>SpelesLaukumaIzmers or y>SpelesLaukumaIzmers:
+            return True
+        else:
+            return False
     # Aizvieto kaulinu at tukšu vietu.
     def NonemtKaulinu(self,x,y):
         self.matrica[x][y].aiznemts=None
     # Veic Kustību
-    def kustiba(self,x0,y0,x1,y1):\
+    def kustiba(self,x0,y0,x1,y1):
         m=self.matrica
-        
-        
+        m[x1][y1]=m[x0][y0].copy()
+        m[x0][y0].aiznemts=None
+        self.kronet(x1,y1)
+    #atgriez atlautos gajienus    
     def atlautieGajieni(self,x,y,lekt=False) :
+        #vk- vienkarsa kustiba | AG- atlautie gajieni|  ga- gajiens | m matrica | mat - matrica ar kordinatem no gajiena
+        m=self.matrica
         VK=self.vienkarsakustiba(x,y)
         AG=[]
-    
+        if not lekt:
+            for ga in VK:
+                mat=m[ga[0]][ga[1]]
+                if not self.ArPusGalda(ga[0],ga[1]):
+                    if mat.aiznemts==None:
+                        AG.append(ga)
+                    elif mat.aiznemts.krasa != m[x][y].aiznemts.krasa and not self.ArPusGalda(ga[0]+(ga[0]-x),ga[1]+(ga[1]-y)) and m[ga[0]+(ga[0]-x)][ga[1]+(ga[1]-y)].aiznemts==None:
+                        AG.append((ga[0]+(ga[0]-x),ga[1]+(ga[1]-y)))
+        else:
+            for gajieni in VK:
+                pass    
+            
+        return AG    
     
     def kronet(self,x,y):
        if self.matrica[x][y].aiznemts!=None: 

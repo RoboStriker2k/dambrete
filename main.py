@@ -53,20 +53,35 @@ def main():
     print("Arpus glada check=",spele.galds1.ArPusGalda(0,2))
     print("Atlautie gajieni=",spele.galds1.atlautieGajieni(0,2))
     print("vispariga kustiba=",spele.galds1.vienkarsakustiba(0,2))    
-    print("matrica 1 1=",spele.galds1.lokacija(0,2).aiznemts)    
+    spele.galds1.kustiba(0,2,1,3)
+    
+    print("Atlautie gajieni=",spele.galds1.atlautieGajieni(1,3))
+    print("vispariga kustiba=",spele.galds1.vienkarsakustiba(1,3))    
+    
+    
+    print("Atlautie gajieni=",spele.galds1.atlautieGajieni(1,5))
+    print("vispariga kustiba=",spele.galds1.vienkarsakustiba(1,5))  
+    spele.galds1.kustiba(1,5,2,4)
+    print("Atlautie gajieni=",spele.galds1.atlautieGajieni(2,4))
+    print("vispariga kustiba=",spele.galds1.vienkarsakustiba(2,4))  
+    spele.galds1.kustiba(2,4,0,2)
+    spele.galds1.matrica[0][2].aiznemts.dama=True
+    spele.galds1.matrica[1][3].aiznemts.dama=True
     while Running == True:
         grafika()
         krasojums()
         grafKaul(lauc)
         pygame.display.update()
-        clock.tick(60)
-
+        clock.tick(10)
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 Running = False
                 sys.exit()
-
+            if event.type==MOUSEBUTTONDOWN:
+                pass
+                
 # iekrāso kvadrātu laukumus
 
 
@@ -93,9 +108,15 @@ def grafKaul(matrica):
         for y in range(SpelesLaukumaIzmers):
          if matrica[x][y].aiznemts!=None:
             if matrica[x][y].aiznemts.krasa==(255, 255, 255):
-                screen.blit(SP1att, (kvadrataizmers*x, kvadrataizmers*y))
+                if not matrica[x][y].aiznemts.dama:
+                    screen.blit(SP1att, (kvadrataizmers*x, kvadrataizmers*y))
+                else :
+                    screen.blit(SP1datt, (kvadrataizmers*x, kvadrataizmers*y))   
             elif matrica[x][y].aiznemts.krasa==(0,  0,  0):
+               if not matrica[x][y].aiznemts.dama: 
                 screen.blit(SP2att, (kvadrataizmers*x, kvadrataizmers*y))  
+               else :
+                    screen.blit(SP2datt, (kvadrataizmers*x, kvadrataizmers*y))   
             else:
       
    
@@ -202,8 +223,8 @@ class Galds:
     # Veic Kustību
     def kustiba(self,x0,y0,x1,y1):
         m=self.matrica
-        m[x1][y1]=m[x0][y0].copy()
-        m[x0][y0].aiznemts=None
+        m[x1][y1].aiznemts=m[x0][y0].aiznemts
+        self.NonemtKaulinu(x0,y0)
         self.kronet(x1,y1)
     #atgriez atlautos gajienus    
     def atlautieGajieni(self,x,y,lekt=False) :
@@ -220,14 +241,16 @@ class Galds:
                     elif mat.aiznemts.krasa != m[x][y].aiznemts.krasa and not self.ArPusGalda(ga[0]+(ga[0]-x),ga[1]+(ga[1]-y)) and m[ga[0]+(ga[0]-x)][ga[1]+(ga[1]-y)].aiznemts==None:
                         AG.append((ga[0]+(ga[0]-x),ga[1]+(ga[1]-y)))
         else:
-            for gajieni in VK:
-                pass    
-            
+            for ga in VK:
+                if not self.ArPusGalda(ga[0],ga[1]):
+                    if m[ga[0]][ga[1]].aiznemts==None:   
+                       if m[ga[0]][ga[1]].aiznemts.krasa != m[x][y].aiznemts.krasa and not self.ArPusGalda(ga[0]+(ga[0]-x),ga[1]+(ga[1]-y)) and m[ga[0]+(ga[0]-x)][ga[1]+(ga[1]-y)].aiznemts==None:
+                        AG.append((ga[0]+(ga[0]-x),ga[1]+(ga[1]-y)))       
         return AG    
     
     def kronet(self,x,y):
        if self.matrica[x][y].aiznemts!=None: 
-        if (self.matrica[x][y].aiznemts.krasa==(255,255,255) and y==0) or(self.matrica[x][y].azinemts.krasa==(0,0,0) and y==SpelesLaukumaIzmers):
+        if (self.matrica[x][y].aiznemts.krasa==(255,255,255) and y==0) or(self.matrica[x][y].aiznemts.krasa==(0,0,0) and y==SpelesLaukumaIzmers):
             self.matrica[x][y].aiznemts.dama()
             
                 

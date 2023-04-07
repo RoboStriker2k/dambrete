@@ -15,7 +15,7 @@ width = 800
 height = 600
 
 # speles iestatijumi
-SpelesLaukumaIzmers = 8 # maina speles laukuma lielumu ( domats rindu un kolonu skaits)
+SpelesLaukumaIzmers = 7 # maina speles laukuma lielumu ( domats rindu un kolonu skaits)
 kvadrataizmers = height/SpelesLaukumaIzmers
 
 # Virzienu definicija
@@ -62,7 +62,6 @@ def main():
         # grf.grafika()
         # grf.krasojums()
         # grf.grafKaul(spele.galds1.matrica)
-     
         
         pygame.display.update()
         for event in pygame.event.get():
@@ -77,11 +76,12 @@ def main():
                 
               #  print(spele.Gajieni,spele.atlasits,"Talak")
                 pygame.display.update()
-                if spele.beigas():
+                if spele.beigas()==True:
                         spele=Spele()
 
             if event.type==pygame.KEYDOWN and event.key==pygame.K_g:
                     spele.mainispeletaju()
+                   
                 
 
 
@@ -96,8 +96,11 @@ class Grafika:
         
         self.panelis2 = pygame.Surface((width-height, height))
         self.font1 = pygame.font.Font(None, 50)
+        self.font2 = pygame.font.Font(None, 25)
         self.screen = pygame.display.set_mode((width, height))
         self.teksts =  self.font1.render('Dambrete', False, 'black')
+        self.teksts2=self.font2.render('Speletaja Vertiba=',False,'black')
+        
             # importe attelus un parveido to izmeru
         self.SP1att = pygame.image.load('atteli/speletajs1.png')
         self.SP2att = pygame.image.load('atteli/speletajs2.png')
@@ -116,6 +119,7 @@ class Grafika:
     def update(self,spe):
         self.grafika()
         self.krasojums()
+        self.attelovertibu(spe.SpeletajaVertiba())
         
         if spe.atlasits !=None:
             self.iekrasoAtzimeto(spe.galds1.atlautieGajieni(spe.atlasits[0],spe.atlasits[1]),spe.atlasits)
@@ -137,6 +141,7 @@ class Grafika:
         self.laukums.fill(fonakrasa)
         self.panelis2.fill(fons2krasa)
         self.screen.blit(self.teksts, (600, 10))
+        self.screen.blit(self.teksts2, (600, 50))
         self.kvadra.fill('white')
         self.kvadra2.fill(iekrasots)
 
@@ -170,7 +175,10 @@ class Grafika:
             self. screen.blit( self. kvadra2 ,(lauki1[0]*kvadrataizmers,lauki1[1]*kvadrataizmers))
         if atzime !=None:
            self. screen.blit(self. kvadra2,(atzime[0]*kvadrataizmers,atzime[1]*kvadrataizmers))                    
-
+    def attelovertibu(self,vertiba):
+        vertiba=str(vertiba)
+        self.teksts3=self.font2.render(vertiba,False,'black')
+        self.screen.blit(self.teksts3, (780, 50))
 
 ################################### speles gaitu saistitas funkcijas ######################
 class Spele:
@@ -248,20 +256,31 @@ class Spele:
                        if sp.aiznemts!=None:
                         if self.galds1.lokacija(x,y).aiznemts.krasa == (255, 255, 255) :
                             skaitsW=skaitsW+1
-                        else:
+
+                        elif self.galds1.lokacija(x,y).aiznemts.krasa == (0, 0, 0) :
                             skaitsB=skaitsB+1
-        if skaitsB==0:
+        if skaitsW==0:
             flagW=True
         if skaitsB==0:
             flagB=True
-        if flagB==True or flagW==True:
+        if flagB or flagW:
             return True
         else:
             return False            
-                    
-       
-       
-       
+    def SpeletajaVertiba(self):
+        skaits=0   
+        for x in range(SpelesLaukumaIzmers):
+               for y in range(SpelesLaukumaIzmers):
+                   sp=self.galds1.lokacija(x,y)
+                   if sp.krasa==Melns:
+                       if sp.aiznemts!=None:
+                           
+                        if sp.aiznemts.krasa == self.speletajs :
+                            skaits=skaits+ sp.aiznemts.vertiba
+                           
+        return skaits
+  
+         
 ################################################## Speles galdu saistitas funkcijas #############################
 class Galds:
     def __init__(self):
@@ -397,8 +416,23 @@ class Bots:
 
 
 
-
-
+####################### speles koka virsotne #########
+class Virsotne:
+    def __init__(self, id, gajieni, p1, p2, limenis) :
+        self.id=id
+        self.gajieni=gajieni
+        self.p1=p1
+        self.p2=p2
+        self.limenis=limenis
+##################### Speles koks ##################
+class SpelesKoks:
+    def __init__(self):
+        self.virstones=[]
+        self.loki=dict()        
+    def PievienoVirsotni(self,Virstone):
+        self.virstones.append(Virsotne)
+    def PievienoLoku(self,svirsotne,bvirsotne):
+        self.loki[svirsotne]=self.loki.get(svirsotne,[])+[bvirsotne]    
 
 
 

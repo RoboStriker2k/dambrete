@@ -15,7 +15,7 @@ width = 800
 height = 600
 
 # speles iestatijumi
-SpelesLaukumaIzmers = 12
+SpelesLaukumaIzmers = 8 # maina speles laukuma lielumu ( domats rindu un kolonu skaits)
 kvadrataizmers = height/SpelesLaukumaIzmers
 
 # Virzienu definicija
@@ -37,22 +37,22 @@ def main():
     grf = spele.gr
     #laukumavertibas1 = spele.galds1.atgriezt_laukumu()
    
-    print("Arpus glada check=", spele.galds1.ArPusGalda(0, 2))
-    print("Atlautie gajieni=", spele.galds1.atlautieGajieni(0, 2))
-    print("vispariga kustiba=", spele.galds1.vienkarsakustiba(0, 2))
-    spele.galds1.kustiba(0, 2, 1, 3)
+    # print("Arpus glada check=", spele.galds1.ArPusGalda(0, 2))
+    # print("Atlautie gajieni=", spele.galds1.atlautieGajieni(0, 2))
+    # print("vispariga kustiba=", spele.galds1.vienkarsakustiba(0, 2))
+    # spele.galds1.kustiba(0, 2, 1, 3)
 
-    print("Atlautie gajieni=", spele.galds1.atlautieGajieni(1, 3))
-    print("vispariga kustiba=", spele.galds1.vienkarsakustiba(1, 3))
+    # print("Atlautie gajieni=", spele.galds1.atlautieGajieni(1, 3))
+    # print("vispariga kustiba=", spele.galds1.vienkarsakustiba(1, 3))
 
-    print("Atlautie gajieni=", spele.galds1.atlautieGajieni(1, 5))
-    print("vispariga kustiba=", spele.galds1.vienkarsakustiba(1, 5))
-    spele.galds1.kustiba(1, 5, 2, 4)
-    print("Atlautie gajieni=", spele.galds1.atlautieGajieni(2, 4))
-    print("vispariga kustiba=", spele.galds1.vienkarsakustiba(2, 4))
-    spele.galds1.kustiba(2, 4, 0, 2)
+    # print("Atlautie gajieni=", spele.galds1.atlautieGajieni(1, 5))
+    # print("vispariga kustiba=", spele.galds1.vienkarsakustiba(1, 5))
+    # spele.galds1.kustiba(1, 5, 2, 4)
+    # print("Atlautie gajieni=", spele.galds1.atlautieGajieni(2, 4))
+    # print("vispariga kustiba=", spele.galds1.vienkarsakustiba(2, 4))
+    # spele.galds1.kustiba(2, 4, 0, 2)
     
-    spele.galds1.matrica[1][3].aiznemts.dama = True
+    # spele.galds1.matrica[1][3].aiznemts.dama = True
     while Running == True:
         grf.update(spele)
     
@@ -68,12 +68,15 @@ def main():
                 Running = False
                 sys.exit()
             if event.type == MOUSEBUTTONDOWN:
-                print(spele.Gajieni,spele.atlasits,"Pirms")
+             #   print(spele.Gajieni,spele.atlasits,"Pirms")
                 spele.SpGajiens()
-                print(spele.Gajieni,spele.atlasits,"pec")
+               # print(spele.Gajieni,spele.atlasits,"pec")
                 
-                print(spele.Gajieni,spele.atlasits,"Talak")
+              #  print(spele.Gajieni,spele.atlasits,"Talak")
                 pygame.display.update()
+            if event.type==pygame.KEYDOWN and event.key==pygame.K_g:
+                    spele.mainispeletaju()
+                
 
 
 
@@ -108,9 +111,10 @@ class Grafika:
     def update(self,spe):
         self.grafika()
         self.krasojums()
-        self.grafKaul(spe.galds1.matrica)
+        
         if spe.atlasits !=None:
             self.iekrasoAtzimeto(spe.galds1.atlautieGajieni(spe.atlasits[0],spe.atlasits[1]),spe.atlasits)
+        self.grafKaul(spe.galds1.matrica)    
     def krasojums(self):
         for x in range(SpelesLaukumaIzmers):
             for y in range(SpelesLaukumaIzmers):
@@ -122,7 +126,7 @@ class Grafika:
                     self.   screen.blit(
                         self.  kvadra, (kvadrataizmers*x, kvadrataizmers*y))
 
-    def grafika(self):
+    def grafika(self): 
 
         self.  screen.blit(self.laukums, (0, 0))
         self.  screen.blit(self.panelis2, (600, 0))
@@ -133,9 +137,9 @@ class Grafika:
         self.kvadra2.fill(iekrasots)
 
 
-# attelo kauliņus uz laukuma
 
-    def grafKaul(self, matrica):
+
+    def grafKaul(self, matrica):# attelo kauliņus uz laukuma
         for x in range(SpelesLaukumaIzmers):
             for y in range(SpelesLaukumaIzmers):
                 if matrica[x][y].aiznemts != None:
@@ -179,15 +183,19 @@ class Spele:
         self.lekt=False
         self.Gajieni=[]        
         
-    # funkcija atgriez laucinu uzkura atrodas pele
-    def lauks(self,x,y):
+    def mainispeletaju(self):
+        if self.speletajs==(255, 255, 255):
+            self.speletajs=(0, 0, 0)
+        else:
+            self.speletajs=(255, 255, 255)
+    def lauks(self,x,y):   # funkcija atgriez laucinu uzkura atrodas pele
         return(x//kvadrataizmers,y//kvadrataizmers)
         
     def SpGajiens(self):
         Pele_pos = tuple(map(int, pygame.mouse.get_pos()))
-        print(Pele_pos,"peles kordinates") #debug teksts prieks peles pozicijas noteiksanas
+      #  print(Pele_pos,"peles kordinates") #debug teksts prieks peles pozicijas noteiksanas
         self.peles_pos=tuple(map(int,self.lauks(Pele_pos[0],Pele_pos[1])))
-        print(self.peles_pos," Pozicija laucina") #debug teksts prieks peles pozicijas noteiksanas
+      #  print(self.peles_pos," Pozicija laucina") #debug teksts prieks peles pozicijas noteiksanas
         if self.peles_pos[0]<SpelesLaukumaIzmers and self.peles_pos[1]<SpelesLaukumaIzmers:   
           if self.atlasits !=None:
             self.Gajieni=self.galds1.atlautieGajieni(self.atlasits[0],self.atlasits[1],self.lekt)
@@ -254,21 +262,18 @@ class Spele:
 class Galds:
     def __init__(self):
         self.matrica = self.jaunaSpele()
-
     def jaunaSpele(self):
         # izveido jaunu laukumu
-        
         matrica = [[None]*SpelesLaukumaIzmers for i in range(SpelesLaukumaIzmers)]
-        # azipilda to ar lauciņiem
-        for x in range(SpelesLaukumaIzmers):
+        for x in range(SpelesLaukumaIzmers): # azipilda to ar lauciņiem
             for y in range(SpelesLaukumaIzmers):
                 if ((x % 2 > 0) and (y % 2 == 0)) or ((x % 2 == 0) and (y % 2 > 0)):
                     matrica[x][y] = laucins(Balts)
                 elif ((x % 2 > 0) and (y % 2 > 0)) or ((x % 2 == 0) and (y % 2 == 0)):
                     matrica[x][y] = laucins(Melns)
 
-        # aizpilda to ar kauliņiem
-        for x in range(SpelesLaukumaIzmers):
+        
+        for x in range(SpelesLaukumaIzmers):# aizpilda to ar kauliņiem
             for y in range(3):
                 if matrica[x][y].krasa == Melns:
                     matrica[x][y].aiznemts = kaulins(Melns)
@@ -280,29 +285,14 @@ class Galds:
 
         return matrica
 
-    # def atgriezt_laukumu(self):
-    #     laukumavertibas = [[None]*SpelesLaukumaIzmers]*SpelesLaukumaIzmers
-    #     for x in range(SpelesLaukumaIzmers):
-    #         for y in range(SpelesLaukumaIzmers):
-    #             if self.matrica[x][y].krasa == Balts:
-    #                 laukumavertibas[x][y] = "Balts"
-    #                 #   print(x,y, "Balts")
-    #             elif self.matrica[x][y].krasa == Melns:
-    #                 laukumavertibas[x][y] = "Melns"
-    #                 # print(x,y, "Melns")
-    #             else:
-    #                 laukumavertibas[x][y] = "Tukšs"
-    #                 # print(x,y, "Tukšs")
-    #     return laukumavertibas
 
-    # atgriez matricas elementu 
-    def lokacija(self, x, y):
+    def lokacija(self, x, y):# atgriez matricas elementu 
         x = int(x)
         y = int(y)
         
         return self.matrica[x][y]
-    #atgriez apkartejo laukumu kordināti
-    def relativitate(self, virziens, x, y):
+    
+    def relativitate(self, virziens, x, y):#atgriez apkartejo laukumu kordināti
         match virziens:
             case "KZ":
                 return (x-1, y+1)
@@ -314,13 +304,12 @@ class Galds:
                 return (x+1, y-1)
             case _:
                 return 0
-    # atgriez apkartejos laucinuss
+    
 
-    def apkartejie(self, x, y):
+    def apkartejie(self, x, y):# atgriez apkartejos laucinuss
         return [self.relativitate(KA, x, y), self.relativitate(LA, x, y), self.relativitate(KZ, x, y), self.relativitate(LZ, x, y)]
-    # atgriez visus gajienus kaulinam
 
-    def vienkarsakustiba(self, x, y):
+    def vienkarsakustiba(self, x, y):# atgriez visus gajienus kaulinam
 
         if self.matrica[x][y].aiznemts != None:
             if self.matrica[x][y].aiznemts.dama == False and self.matrica[x][y].aiznemts.krasa == (255, 255, 255):
@@ -336,16 +325,16 @@ class Galds:
             gajiens = []
 
         return gajiens
-    # parbauda vai kordinate arpus galda #ja x,y vienads ar SpelesLaukumaIzmeru matrica[x][y]atgriez out of index
+    
 
-    def ArPusGalda(self, x, y):
+    def ArPusGalda(self, x, y):# parbauda vai kordinate arpus galda #ja x,y vienads ar SpelesLaukumaIzmeru matrica[x][y]atgriez out of index
         if x < 0 or y < 0 or x >= SpelesLaukumaIzmers or y >= SpelesLaukumaIzmers:
             return True
         else:
             return False
-    # Aizvieto kaulinu at tukšu vietu.
+   
 
-    def NonemtKaulinu(self, x, y):
+    def NonemtKaulinu(self, x, y): # Aizvieto kaulinu at tukšu vietu.
         self.matrica[x][y].aiznemts = None
     # Veic Kustību
 
@@ -374,14 +363,13 @@ class Galds:
                     if m[ga[0]][ga[1]].aiznemts != None:
                         if m[ga[0]][ga[1]].aiznemts.krasa != m[x][y].aiznemts.krasa and not self.ArPusGalda(ga[0]+(ga[0]-x), ga[1]+(ga[1]-y)) and m[ga[0]+(ga[0]-x)][ga[1]+(ga[1]-y)].aiznemts == None:
                             AG.append((ga[0]+(ga[0]-x), ga[1]+(ga[1]-y)))
-        print(AG,"-Atlautie gajieni")
+       # print(AG,"-Atlautie gajieni")
         return AG
 
     def kronet(self, x, y):
         if self.matrica[x][y].aiznemts != None:
             if (self.matrica[x][y].aiznemts.krasa == (255, 255, 255) and y == 0) or (self.matrica[x][y].aiznemts.krasa == (0, 0, 0) and y == SpelesLaukumaIzmers):
-                self.matrica[x][y].aiznemts.dama()
-
+                self.matrica[x][y].aiznemts.damas()
 
 ######################################## Kaulina definicija ############################################
 class kaulins:
@@ -389,13 +377,10 @@ class kaulins:
         self.krasa = krasa
         self.dama = dama
         self.vertiba = 1
-
-    def dama(self):
+    def damas(self):
         self.dama = True
         self.vertiba = 2
 ######################################### Laucina definicija  ##########################################
-
-
 class laucins:
     def __init__(self, krasa, aiznemts=None):
         self.krasa = krasa
@@ -408,11 +393,6 @@ class laucins:
 class Bots:
     def __init__(self) -> None:
         pass
-
-
-
-
-
 
 ######################################## INICIALIZE MAIN FUNKCIJU #################################################
 if __name__ == "__main__":

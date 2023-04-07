@@ -9,12 +9,13 @@ Balts = (255, 255, 255)
 Melns = (0,  0,  0)
 fonakrasa = (37, 216, 85)
 fons2krasa = (88, 206, 202)
+iekrasots=(69,69,69)
 # logu izmers
 width = 800
 height = 600
 
 # speles iestatijumi
-SpelesLaukumaIzmers = 6
+SpelesLaukumaIzmers = 12
 kvadrataizmers = height/SpelesLaukumaIzmers
 
 # Virzienu definicija
@@ -50,14 +51,15 @@ def main():
     print("Atlautie gajieni=", spele.galds1.atlautieGajieni(2, 4))
     print("vispariga kustiba=", spele.galds1.vienkarsakustiba(2, 4))
     spele.galds1.kustiba(2, 4, 0, 2)
-    spele.galds1.matrica[0][2].aiznemts.dama = True
+    
     spele.galds1.matrica[1][3].aiznemts.dama = True
     while Running == True:
         grf.grafika()
         grf.krasojums()
+       # grf.iekrasoAtzimeto(spele.galds1.atlautieGajieni,spele.atlasits)
         grf.grafKaul(lauc)
         pygame.display.update()
-
+        spele.SpGajiens();
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -67,9 +69,9 @@ def main():
                 pass
 
 
-# Nodrosina parejo grafikas laukumu
 
 
+#################################### SPeles grafikas saistitas funkcijas #############
 class Grafika:
     def __init__(self):
 
@@ -81,6 +83,7 @@ class Grafika:
         self.font1 = pygame.font.Font(None, 50)
         self.screen = pygame.display.set_mode((width, height))
         self.teksts =  self.font1.render('Dambrete', False, 'black')
+            # importe attelus un parveido to izmeru
         self.SP1att = pygame.image.load('atteli/speletajs1.png')
         self.SP2att = pygame.image.load('atteli/speletajs2.png')
         self.SP1datt = pygame.image.load('atteli/speletajs1dama.png')
@@ -115,7 +118,7 @@ class Grafika:
         self.  panelis2.fill(fons2krasa)
         self. screen.blit(self.teksts, (600, 10))
 
-    # importe attelus un parveido to izmeru
+
 
 # attelo kauliņus uz laukuma
 
@@ -140,8 +143,14 @@ class Grafika:
                     else:
 
                         pass
+    def iekrasoAtzimeto(self,lauk,atzime):
+        for lauki1 in lauk:
+            pygame.draw.rect(self.screen,iekrasots,(lauki1[0]*kvadrataizmers,lauki1[1]*kvadrataizmers,kvadrataizmers,kvadrataizmers))
+        if atzime !=None:
+            pygame.draw.rect(self.screen,iekrasots,(atzime[0]*kvadrataizmers,atzime[1]*kvadrataizmers,kvadrataizmers,kvadrataizmers))                    
 
 
+################################### speles gaitu saistitas funkcijas ######################
 class Spele:
     """
     Speles sakums
@@ -151,13 +160,26 @@ class Spele:
     def __init__(self):
         self.galds1 = Galds()
         self.gr = Grafika()
-        self.atlasits = False
+        self.atlasits = None
         self.speletajs = 1
-
+        self.lekt=False
+        
+        
+    # funkcija atgriez laucinu uzkura atrodas pele
+    def lauks(self,x,y):
+        return(x//kvadrataizmers,y//kvadrataizmers)
+        
     def SpGajiens(self):
-        Pele_pos = tuple(map(int, pygame.mouse.get_pos))
-
-
+        Pele_pos = tuple(map(int, pygame.mouse.get_pos()))
+     #   print(Pele_pos,"peles kordinates") #debug teksts prieks peles pozicijas noteiksanas
+        self.peles_pos=tuple(map(int,self.lauks(Pele_pos[0],Pele_pos[1])))
+       # print(self.peles_pos," Pozicija laucina") #debug teksts prieks peles pozicijas noteiksanas
+       
+       
+       
+       
+       
+################################################## Speles galdu saistitas funkcijas #############################
 class Galds:
     def __init__(self):
         self.matrica = self.jaunaSpele()
@@ -305,6 +327,18 @@ class laucins:
     def __init__(self, krasa, aiznemts=None):
         self.krasa = krasa
         self.aiznemts = aiznemts
+
+
+
+########################################## Bota funkcijas #########################################
+#To be added 
+class Bots:
+    def __init__(self) -> None:
+        pass
+
+
+
+
 
 
 ######################################## INICIALIZE MAIN FUNKCIJU #################################################

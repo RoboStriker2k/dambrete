@@ -33,6 +33,9 @@ clock = pygame.time.Clock()
 def main():
     Running = True  # Mainigais ar kuru vares partraukt programams darbibu patraucot while loop
 
+  
+
+
     spele = Spele()
     grf = spele.gr
     #laukumavertibas1 = spele.galds1.atgriezt_laukumu()
@@ -74,10 +77,12 @@ def main():
                 
               #  print(spele.Gajieni,spele.atlasits,"Talak")
                 pygame.display.update()
+                if spele.beigas():
+                        spele=Spele()
+
             if event.type==pygame.KEYDOWN and event.key==pygame.K_g:
                     spele.mainispeletaju()
                 
-
 
 
 #################################### SPeles grafikas saistitas funkcijas #############
@@ -126,17 +131,16 @@ class Grafika:
                     self.   screen.blit(
                         self.  kvadra, (kvadrataizmers*x, kvadrataizmers*y))
 
-    def grafika(self): 
-
-        self.  screen.blit(self.laukums, (0, 0))
-        self.  screen.blit(self.panelis2, (600, 0))
-        self.  laukums.fill(fonakrasa)
-        self.  panelis2.fill(fons2krasa)
-        self. screen.blit(self.teksts, (600, 10))
+    def grafika(self):
+        self.screen.blit(self.laukums, (0, 0))
+        self.screen.blit(self.panelis2, (600, 0))
+        self.laukums.fill(fonakrasa)
+        self.panelis2.fill(fons2krasa)
+        self.screen.blit(self.teksts, (600, 10))
         self.kvadra.fill('white')
         self.kvadra2.fill(iekrasots)
 
-
+   
 
 
     def grafKaul(self, matrica):# attelo kauliņus uz laukuma
@@ -214,8 +218,8 @@ class Spele:
                     self.BeigtGajienu()
         if self.lekt:
             if self.atlasits!= None and self.peles_pos in self.galds1.atlautieGajieni(self.atlasits[0],self.atlasits[1],self.lekt):
-                self.galds1.kustiba[self.atlasits[0],self.atlasits[1],self.peles_pos[0],self.peles_pos[1]]
-               # self.galds1.NonemtKaulinu(self.atlasits[0] + (self.peles_pos[0] - self.atlasits[0]) // 2, self.atlasits[1] + (self.peles_pos[1] - self.atlasits[1]) // 2)
+                self.galds1.kustiba(self.atlasits[0],self.atlasits[1],self.peles_pos[0],self.peles_pos[1])
+                self.galds1.NonemtKaulinu(self.atlasits[0] + (self.peles_pos[0] - self.atlasits[0]) // 2, self.atlasits[1] + (self.peles_pos[1] - self.atlasits[1]) // 2)
             if self.galds1.atlautieGajieni(self.peles_pos[0],self.peles_pos[1],self.lekt)==[]:
                 self.BeigtGajienu()
             else:
@@ -234,7 +238,7 @@ class Spele:
        
     def beigas(self):
         skaitsW=0
-        skaitsB-0
+        skaitsB=0
         flagW=False
         flagB=False
         for x in range(SpelesLaukumaIzmers):
@@ -287,9 +291,6 @@ class Galds:
 
 
     def lokacija(self, x, y):# atgriez matricas elementu 
-        x = int(x)
-        y = int(y)
-        
         return self.matrica[x][y]
     
     def relativitate(self, virziens, x, y):#atgriez apkartejo laukumu kordināti
@@ -310,7 +311,6 @@ class Galds:
         return [self.relativitate(KA, x, y), self.relativitate(LA, x, y), self.relativitate(KZ, x, y), self.relativitate(LZ, x, y)]
 
     def vienkarsakustiba(self, x, y):# atgriez visus gajienus kaulinam
-
         if self.matrica[x][y].aiznemts != None:
             if self.matrica[x][y].aiznemts.dama == False and self.matrica[x][y].aiznemts.krasa == (255, 255, 255):
                 gajiens = [self.relativitate(
@@ -332,20 +332,14 @@ class Galds:
             return True
         else:
             return False
-   
-
     def NonemtKaulinu(self, x, y): # Aizvieto kaulinu at tukšu vietu.
         self.matrica[x][y].aiznemts = None
-    # Veic Kustību
-
-    def kustiba(self, x0, y0, x1, y1):
+    def kustiba(self, x0, y0, x1, y1):# Veic Kustību
         m = self.matrica
         m[x1][y1].aiznemts = m[x0][y0].aiznemts
         self.NonemtKaulinu(x0, y0)
         self.kronet(x1, y1)
-    # atgriez atlautos gajienus
-
-    def atlautieGajieni(self, x, y, lekt=False):
+    def atlautieGajieni(self, x, y, lekt=False):# atgriez atlautos gajienus
         # vk- vienkarsa kustiba | AG- atlautie gajieni|  ga- gajiens | m matrica | mat - matrica ar kordinatem no gajiena
         m = self.matrica
         VK = self.vienkarsakustiba(x, y)
@@ -368,7 +362,7 @@ class Galds:
 
     def kronet(self, x, y):
         if self.matrica[x][y].aiznemts != None:
-            if (self.matrica[x][y].aiznemts.krasa == (255, 255, 255) and y == 0) or (self.matrica[x][y].aiznemts.krasa == (0, 0, 0) and y == SpelesLaukumaIzmers):
+            if (self.matrica[x][y].aiznemts.krasa == (255, 255, 255) and y == 0) or (self.matrica[x][y].aiznemts.krasa == (0, 0, 0) and y == SpelesLaukumaIzmers-1):
                 self.matrica[x][y].aiznemts.damas()
 
 ######################################## Kaulina definicija ############################################
@@ -391,8 +385,23 @@ class laucins:
 ########################################## Bota funkcijas #########################################
 #To be added 
 class Bots:
-    def __init__(self) -> None:
-        pass
+    def __init__(self,spele,krasa,dzilums=1) :
+       self.dzilums=dzilums
+       self.spele=spele
+       self.krasa=krasa
+       self.parbaudamais=krasa
+    def minmax(self,dzilums,spele,speletajs):
+        if dzilums==0:
+            if speletajs=='max':
+                pass
+
+
+
+
+
+
+
+
 
 ######################################## INICIALIZE MAIN FUNKCIJU #################################################
 if __name__ == "__main__":

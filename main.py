@@ -302,7 +302,7 @@ class Galds:
     # parbauda vai kordinate arpus galda
 
     def ArPusGalda(self, x, y):
-        if x < 0 or y < 0 or x > SpelesLaukumaIzmers or y > SpelesLaukumaIzmers:
+        if x < 0 or y < 0 or x >= SpelesLaukumaIzmers or y >= SpelesLaukumaIzmers:
             return True
         else:
             return False

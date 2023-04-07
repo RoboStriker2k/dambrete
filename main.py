@@ -56,7 +56,7 @@ def main():
     while Running == True:
         grf.grafika()
         grf.krasojums()
-       # grf.iekrasoAtzimeto(spele.galds1.atlautieGajieni,spele.atlasits)
+       
         grf.grafKaul(lauc)
         pygame.display.update()
         spele.SpGajiens();
@@ -66,7 +66,8 @@ def main():
                 Running = False
                 sys.exit()
             if event.type == MOUSEBUTTONDOWN:
-                pass
+                
+                grf.iekrasoAtzimeto(spele.Gajieni,spele.atlasits)
 
 
 
@@ -161,9 +162,9 @@ class Spele:
         self.galds1 = Galds()
         self.gr = Grafika()
         self.atlasits = None
-        self.speletajs = 1
+        self.speletajs = (255, 255, 255)
         self.lekt=False
-        
+        self.Gajieni=[]        
         
     # funkcija atgriez laucinu uzkura atrodas pele
     def lauks(self,x,y):
@@ -171,11 +172,45 @@ class Spele:
         
     def SpGajiens(self):
         Pele_pos = tuple(map(int, pygame.mouse.get_pos()))
-     #   print(Pele_pos,"peles kordinates") #debug teksts prieks peles pozicijas noteiksanas
+        print(Pele_pos,"peles kordinates") #debug teksts prieks peles pozicijas noteiksanas
         self.peles_pos=tuple(map(int,self.lauks(Pele_pos[0],Pele_pos[1])))
-       # print(self.peles_pos," Pozicija laucina") #debug teksts prieks peles pozicijas noteiksanas
+        print(self.peles_pos," Pozicija laucina") #debug teksts prieks peles pozicijas noteiksanas
+        if self.peles_pos[0]<SpelesLaukumaIzmers and self.peles_pos[1]<SpelesLaukumaIzmers:   
+          if self.atlasits !=None:
+                self.Gajieni=self.galds1.atlautieGajieni(self.atlasits[0],self.atlasits[1],self.lekt)
+          if not self.lekt:
+            a=self.galds1.lokacija(self.peles_pos[0],self.peles_pos[1])
+            if a.aiznemts!=None and a.aiznemts.krasa==self.speletajs:
+                  self.atlasits=self.peles_pos
+            
+            
+        
        
        
+       
+    def beigas(self):
+        skaitsW=0
+        skaitsB-0
+        flagW=False
+        flagB=False
+        for x in range(SpelesLaukumaIzmers):
+               for y in range(SpelesLaukumaIzmers):
+                   sp=self.galds1.lokacija(x,y)
+                   if sp.krasa==Melns:
+                       if sp.aiznemts!=None:
+                        if self.galds1.lokacija(x,y).aiznemts.krasa == (255, 255, 255) :
+                            skaitsW=skaitsW+1
+                        else:
+                            skaitsB=skaitsB+1
+        if skaitsB==0:
+            flagW=True
+        if skaitsB==0:
+            flagB=True
+        if flagB==True or flagW==True:
+            return True
+        else:
+            return False            
+                    
        
        
        
@@ -186,8 +221,8 @@ class Galds:
 
     def jaunaSpele(self):
         # izveido jaunu laukumu
-        matrica = [
-            [None]*SpelesLaukumaIzmers for i in range(SpelesLaukumaIzmers)]
+        
+        matrica = [[None]*SpelesLaukumaIzmers for i in range(SpelesLaukumaIzmers)]
         # azipilda to ar lauciņiem
         for x in range(SpelesLaukumaIzmers):
             for y in range(SpelesLaukumaIzmers):
@@ -227,6 +262,7 @@ class Galds:
     def lokacija(self, x, y):
         x = int(x)
         y = int(y)
+        
         return self.matrica[x][y]
 
     def relativitate(self, virziens, x, y):
@@ -290,11 +326,11 @@ class Galds:
         AG = []
         if not lekt:
             for ga in VK:
-                mat = m[ga[0]][ga[1]]
                 if not self.ArPusGalda(ga[0], ga[1]):
-                    if mat.aiznemts == None:
+             
+                    if m[ga[0]][ga[1]].aiznemts == None:
                         AG.append(ga)
-                    elif mat.aiznemts.krasa != m[x][y].aiznemts.krasa and not self.ArPusGalda(ga[0]+(ga[0]-x), ga[1]+(ga[1]-y)) and m[ga[0]+(ga[0]-x)][ga[1]+(ga[1]-y)].aiznemts == None:
+                    elif m[ga[0]][ga[1]].aiznemts.krasa != m[x][y].aiznemts.krasa and not self.ArPusGalda(ga[0]+(ga[0]-x), ga[1]+(ga[1]-y)) and m[ga[0]+(ga[0]-x)][ga[1]+(ga[1]-y)].aiznemts == None:
                         AG.append((ga[0]+(ga[0]-x), ga[1]+(ga[1]-y)))
         else:
             for ga in VK:

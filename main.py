@@ -35,8 +35,8 @@ def main():
 
     spele = Spele()
     grf = spele.gr
-    laukumavertibas1 = spele.galds1.atgriezt_laukumu()
-    lauc = spele.galds1.matrica
+    #laukumavertibas1 = spele.galds1.atgriezt_laukumu()
+   
     print("Arpus glada check=", spele.galds1.ArPusGalda(0, 2))
     print("Atlautie gajieni=", spele.galds1.atlautieGajieni(0, 2))
     print("vispariga kustiba=", spele.galds1.vienkarsakustiba(0, 2))
@@ -54,21 +54,26 @@ def main():
     
     spele.galds1.matrica[1][3].aiznemts.dama = True
     while Running == True:
-        grf.grafika()
-        grf.krasojums()
-       
-        grf.grafKaul(lauc)
+        grf.update(spele)
+    
+        # grf.grafika()
+        # grf.krasojums()
+        # grf.grafKaul(spele.galds1.matrica)
+     
+        
         pygame.display.update()
-        spele.SpGajiens();
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 Running = False
                 sys.exit()
             if event.type == MOUSEBUTTONDOWN:
+                print(spele.Gajieni,spele.atlasits,"Pirms")
+                spele.SpGajiens()
+                print(spele.Gajieni,spele.atlasits,"pec")
                 
-                grf.iekrasoAtzimeto(spele.Gajieni,spele.atlasits)
-
+                print(spele.Gajieni,spele.atlasits,"Talak")
+                pygame.display.update()
 
 
 
@@ -76,10 +81,11 @@ def main():
 class Grafika:
     def __init__(self):
 
-        clock.tick(60)
+        clock.tick(10)
         self.laukums = pygame.Surface((height, height))  # W H
-        self.kvadra = pygame.Surface((kvadrataizmers, kvadrataizmers))  # W H
-        self.kvadra.fill('white')
+        self.kvadra = pygame.Surface((kvadrataizmers, kvadrataizmers))
+        self.kvadra2 = pygame.Surface((kvadrataizmers, kvadrataizmers)) # W H
+        
         self.panelis2 = pygame.Surface((width-height, height))
         self.font1 = pygame.font.Font(None, 50)
         self.screen = pygame.display.set_mode((width, height))
@@ -99,7 +105,12 @@ class Grafika:
             self.SP2datt, (kvadrataizmers, kvadrataizmers))
 
     # iekrāso kvadrātu laukumus
-
+    def update(self,spe):
+        self.grafika()
+        self.krasojums()
+        self.grafKaul(spe.galds1.matrica)
+        if spe.atlasits !=None:
+            self.iekrasoAtzimeto(spe.galds1.atlautieGajieni(spe.atlasits[0],spe.atlasits[1]),spe.atlasits)
     def krasojums(self):
         for x in range(SpelesLaukumaIzmers):
             for y in range(SpelesLaukumaIzmers):
@@ -118,7 +129,8 @@ class Grafika:
         self.  laukums.fill(fonakrasa)
         self.  panelis2.fill(fons2krasa)
         self. screen.blit(self.teksts, (600, 10))
-
+        self.kvadra.fill('white')
+        self.kvadra2.fill(iekrasots)
 
 
 # attelo kauliņus uz laukuma
@@ -145,10 +157,11 @@ class Grafika:
 
                         pass
     def iekrasoAtzimeto(self,lauk,atzime):
-        for lauki1 in lauk:
-            pygame.draw.rect(self.screen,iekrasots,(lauki1[0]*kvadrataizmers,lauki1[1]*kvadrataizmers,kvadrataizmers,kvadrataizmers))
+        if lauk!=None:
+         for lauki1 in lauk:
+            self. screen.blit( self. kvadra2 ,(lauki1[0]*kvadrataizmers,lauki1[1]*kvadrataizmers))
         if atzime !=None:
-            pygame.draw.rect(self.screen,iekrasots,(atzime[0]*kvadrataizmers,atzime[1]*kvadrataizmers,kvadrataizmers,kvadrataizmers))                    
+           self. screen.blit(self. kvadra2,(atzime[0]*kvadrataizmers,atzime[1]*kvadrataizmers))                    
 
 
 ################################### speles gaitu saistitas funkcijas ######################
@@ -177,16 +190,39 @@ class Spele:
         print(self.peles_pos," Pozicija laucina") #debug teksts prieks peles pozicijas noteiksanas
         if self.peles_pos[0]<SpelesLaukumaIzmers and self.peles_pos[1]<SpelesLaukumaIzmers:   
           if self.atlasits !=None:
-                self.Gajieni=self.galds1.atlautieGajieni(self.atlasits[0],self.atlasits[1],self.lekt)
+            self.Gajieni=self.galds1.atlautieGajieni(self.atlasits[0],self.atlasits[1],self.lekt)
           if not self.lekt:
             a=self.galds1.lokacija(self.peles_pos[0],self.peles_pos[1])
             if a.aiznemts!=None and a.aiznemts.krasa==self.speletajs:
                   self.atlasits=self.peles_pos
-            
-            
-        
+            elif self.atlasits!= None and self.peles_pos in self.galds1.atlautieGajieni(self.atlasits[0],self.atlasits[1]):
+                self.galds1.kustiba(self.atlasits[0],self.atlasits[1],self.peles_pos[0],self.peles_pos[1])
+                if self.peles_pos not in self.galds1.apkartejie(self.atlasits[0],self.atlasits[1]):
+                        self.galds1.NonemtKaulinu(self.atlasits[0] + (self.peles_pos[0] - self.atlasits[0]) // 2, self.atlasits[1] + (self.peles_pos[1] - self.atlasits[1]) // 2)
+                        self.lekt=True
+                        self.atlasits=self.peles_pos
+                        
+                else:
+                    self.BeigtGajienu()
+        if self.lekt:
+            if self.atlasits!= None and self.peles_pos in self.galds1.atlautieGajieni(self.atlasits[0],self.atlasits[1],self.lekt):
+                self.galds1.kustiba[self.atlasits[0],self.atlasits[1],self.peles_pos[0],self.peles_pos[1]]
+               # self.galds1.NonemtKaulinu(self.atlasits[0] + (self.peles_pos[0] - self.atlasits[0]) // 2, self.atlasits[1] + (self.peles_pos[1] - self.atlasits[1]) // 2)
+            if self.galds1.atlautieGajieni(self.peles_pos[0],self.peles_pos[1],self.lekt)==[]:
+                self.BeigtGajienu()
+            else:
+                self.atlasits=self.peles_pos              
        
-       
+    def BeigtGajienu(self) :
+        if self.speletajs==(255, 255, 255):
+            self.speletajs=(0, 0, 0)
+        else:
+            self.speletajs=(255, 255, 255)
+            
+        self.atlasits=None
+        self.Gajieni=None
+        self.lekt=False    
+          
        
     def beigas(self):
         skaitsW=0
@@ -244,27 +280,28 @@ class Galds:
 
         return matrica
 
-    def atgriezt_laukumu(self):
-        laukumavertibas = [[None]*SpelesLaukumaIzmers]*SpelesLaukumaIzmers
-        for x in range(SpelesLaukumaIzmers):
-            for y in range(SpelesLaukumaIzmers):
-                if self.matrica[x][y].krasa == Balts:
-                    laukumavertibas[x][y] = "Balts"
-                    #   print(x,y, "Balts")
-                elif self.matrica[x][y].krasa == Melns:
-                    laukumavertibas[x][y] = "Melns"
-                    # print(x,y, "Melns")
-                else:
-                    laukumavertibas[x][y] = "Tukšs"
-                    # print(x,y, "Tukšs")
-        return laukumavertibas
+    # def atgriezt_laukumu(self):
+    #     laukumavertibas = [[None]*SpelesLaukumaIzmers]*SpelesLaukumaIzmers
+    #     for x in range(SpelesLaukumaIzmers):
+    #         for y in range(SpelesLaukumaIzmers):
+    #             if self.matrica[x][y].krasa == Balts:
+    #                 laukumavertibas[x][y] = "Balts"
+    #                 #   print(x,y, "Balts")
+    #             elif self.matrica[x][y].krasa == Melns:
+    #                 laukumavertibas[x][y] = "Melns"
+    #                 # print(x,y, "Melns")
+    #             else:
+    #                 laukumavertibas[x][y] = "Tukšs"
+    #                 # print(x,y, "Tukšs")
+    #     return laukumavertibas
 
+    # atgriez matricas elementu 
     def lokacija(self, x, y):
         x = int(x)
         y = int(y)
         
         return self.matrica[x][y]
-
+    #atgriez apkartejo laukumu kordināti
     def relativitate(self, virziens, x, y):
         match virziens:
             case "KZ":
@@ -299,7 +336,7 @@ class Galds:
             gajiens = []
 
         return gajiens
-    # parbauda vai kordinate arpus galda
+    # parbauda vai kordinate arpus galda #ja x,y vienads ar SpelesLaukumaIzmeru matrica[x][y]atgriez out of index
 
     def ArPusGalda(self, x, y):
         if x < 0 or y < 0 or x >= SpelesLaukumaIzmers or y >= SpelesLaukumaIzmers:
@@ -327,7 +364,6 @@ class Galds:
         if not lekt:
             for ga in VK:
                 if not self.ArPusGalda(ga[0], ga[1]):
-             
                     if m[ga[0]][ga[1]].aiznemts == None:
                         AG.append(ga)
                     elif m[ga[0]][ga[1]].aiznemts.krasa != m[x][y].aiznemts.krasa and not self.ArPusGalda(ga[0]+(ga[0]-x), ga[1]+(ga[1]-y)) and m[ga[0]+(ga[0]-x)][ga[1]+(ga[1]-y)].aiznemts == None:
@@ -335,9 +371,10 @@ class Galds:
         else:
             for ga in VK:
                 if not self.ArPusGalda(ga[0], ga[1]):
-                    if m[ga[0]][ga[1]].aiznemts == None:
+                    if m[ga[0]][ga[1]].aiznemts != None:
                         if m[ga[0]][ga[1]].aiznemts.krasa != m[x][y].aiznemts.krasa and not self.ArPusGalda(ga[0]+(ga[0]-x), ga[1]+(ga[1]-y)) and m[ga[0]+(ga[0]-x)][ga[1]+(ga[1]-y)].aiznemts == None:
                             AG.append((ga[0]+(ga[0]-x), ga[1]+(ga[1]-y)))
+        print(AG,"-Atlautie gajieni")
         return AG
 
     def kronet(self, x, y):

@@ -435,12 +435,12 @@ class Bots:
         Kaul=0
         for x in range(SpelesLaukumaIzmers):
                 for y in range(SpelesLaukumaIzmers):
-                    aiznemts=galds.lokacija(x,y).aiznemts
+                    aiznemts=spele.galds1.lokacija(x,y).aiznemts
                     if aiznemts !=None:
                         Kaul+=1
         return Kaul 
     def VaiVelIrParastie(self,spele):
-        galds=spele.galds1
+        galds=spele.galds
         for x in range(SpelesLaukumaIzmers):
             for y in range(SpelesLaukumaIzmers):
                 aiznemts=galds.lokacija(x,y).aiznemts

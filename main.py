@@ -1,8 +1,8 @@
 import pygame
 import sys
 from pygame.locals import *
-from time import sleep
 import math
+from copy import deepcopy #galda kopešana
 import random #nepieciesams pirmajam gajienam #iespejams
 # speletaju krasas
 #       R     G   B
@@ -30,20 +30,17 @@ pygame.init()
 pygame.display.set_caption('Dambrete')
 clock = pygame.time.Clock()
 
+ArBotu=1 
 
 def main():
     Running = True  # Mainigais ar kuru vares partraukt programams darbibu patraucot while loop
     spele = Spele() #inicializeta kalse spele kura tiks izmantota speles darbibas  gaita
     grf = spele.gr  #ar grafiku saistita apstrade kura izsauc speles izsaukto grafikas klasi
-    koks=SpelesKoks() #speles koka funkcijas
-    generetasVirsotnes=[] # koka virsotnes kas tiks glabatas šaja sarakstā 
-    bots=Bots(spele,(0,  0,  0),koks)
     
     
-    
-    
-    # Speles galvenais cikls
-    while Running == True:
+    if ArBotu==0:
+    # Speles galvenais cikls Bez Algoritma, diviem speletajiem katram nemot gajienu
+     while Running == True:
         grf.update(spele)
         pygame.display.update()
         for event in pygame.event.get():
@@ -60,10 +57,34 @@ def main():
                 pygame.display.update()
                 if spele.beigas()==True:
                         spele=Spele()
-                bots.minmax(4,spele,True,spele.atlasits)
             if event.type==pygame.KEYDOWN and event.key==pygame.K_g:
                     spele.mainispeletaju()
-                   
+    # Speles galvenais cikls   Ar algoritma implementāciju             
+    else:
+     koks=SpelesKoks() #speles koka funkcijas
+     generetasVirsotnes=[] # koka virsotnes kas tiks glabatas šaja sarakstā 
+     bots=Bots(spele,(0,  0,  0),koks)
+        
+        
+     while Running == True :
+        grf.update(spele)
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                Running = False
+                sys.exit()
+            if event.type == MOUSEBUTTONDOWN:
+             #   print(spele.Gajieni,spele.atlasits,"Pirms")
+                spele.SpGajiens()
+               # print(spele.Gajieni,spele.atlasits,"pec")
+                
+              #  print(spele.Gajieni,spele.atlasits,"Talak")
+                pygame.display.update()
+                if spele.beigas()==True:
+                        spele=Spele()
+            if event.type==pygame.KEYDOWN and event.key==pygame.K_g:
+                    spele.mainispeletaju()               
                 
 
 
@@ -164,11 +185,6 @@ class Grafika:
 
 ################################### speles gaitu saistitas funkcijas ######################
 class Spele:
-    """
-    Speles sakums
-
-    """
-
     def __init__(self):
         self.galds1 = Galds() #apzime galda mainigo
         self.gr = Grafika() #apzime grafikas klases mainigo
@@ -393,28 +409,97 @@ class Bots:
        self.krasa=krasa
        self.parbaudamais=krasa
        self.koks=koks
-    def minmax(self,dzilums,spele,MaxGajiens,virsotne):
-        if dzilums==0 and spele.beigas==True:
-            return spele.Speletajavertiba
-        print(virsotne)
-        global id_virsotne
-        self.koks.PievienoVirsotni(id_virsotne,)
-        id_virsotne+=1
-        if MaxGajiens:
-            labakavertiba=-math.inf
-            if virsotne!=None:
-                gajieni=self.spele.galds1.atlautieGajieni(virsotne[0],virsotne[1])
-                print(self.spele.galds1.atlautieGajieni(virsotne[0],virsotne[1]))
-                for gajiens in gajieni:
-                    minmax(dzilums+1,spele,False)        
-
+    def minmax(self,dzilums,spele,Speletajs):
+        #zem speletājs domāts min or max gajiens
+        if dzilums==0:
+            if Speletajs=='max':
+                maxvertiba=-math.inf
+                LabakaPos=None
+                LabakaisGajiens=None
+                Iespejamie_Gajieni=self.GajienaIegusana(spele)
+                for gajieni in Iespejamie_Gajieni:
+                    pass
+    def GajienaIegusana(self,spele):
+        for x in range(SpelesLaukumaIzmers) :               
+            for y in range(SpelesLaukumaIzmers) :  
+                if spele.galds1.atlautieGajieni(self, x, y, self.spele.lekt)!=[] and spele.galds1.aiznemts!=None and spele.galds1.aiznemts.krasa==self.spele.speletajs :
+                    yield (x,y,spele.galds1.atlautieGajieni(self, x, y, self.spele.lekt))
+    def VisuGajienuIegusana(self,spele):
+        IespGa=[]
+        for x in range(SpelesLaukumaIzmers) :               
+            for y in range(SpelesLaukumaIzmers) :  
+                if spele.galds1.atlautieGajieni(self, x, y, self.spele.lekt)!=[] and spele.galds1.aiznemts!=None and spele.galds1.aiznemts.krasa==self.spele.speletajs :
+                    IespGa.append (x,y,spele.galds1.atlautieGajieni(self, x, y, self.spele.lekt))       
+        return IespGa
+    def KaulinuDaudzums(self,spele):
+        Kaul=0
+        for x in range(SpelesLaukumaIzmers):
+                for y in range(SpelesLaukumaIzmers):
+                    aiznemts=galds.lokacija(x,y).aiznemts
+                    if aiznemts !=None:
+                        Kaul+=1
+        return Kaul 
+    def VaiVelIrParastie(self,spele):
+        galds=spele.galds1
+        for x in range(SpelesLaukumaIzmers):
+            for y in range(SpelesLaukumaIzmers):
+                aiznemts=galds.lokacija(x,y).aiznemts
+                if aiznemts !=None and aiznemts.dama==False:
+                    return True
+        return False                   
+    def KaulVert(self,spele):
+        skaits=0   
+        for x in range(SpelesLaukumaIzmers):
+               for y in range(SpelesLaukumaIzmers):
+                   sp=spele.galds1.lokacija(x,y)
+                   if sp.krasa==Melns:
+                       if sp.aiznemts!=None:
+                           
+                        if sp.aiznemts.krasa == self.krasa :
+                            skaits+= sp.aiznemts.vertiba
+                        else:
+                            skaits-= sp.aiznemts.vertiba   
+        return skaits
+    
+    def VertejumsGalda(self,spele):
+        Vert=0
+        galds=spele.galds1
+        if self.krasa==(255, 255, 255):
+            for x in range(SpelesLaukumaIzmers):
+                for y in range(SpelesLaukumaIzmers):
+                    aiznemts=galds.lokacija(x,y).aiznemts
+                    if aiznemts !=None:
+                        if aiznemts.krasa==self.krasa and aiznemts.dama:
+                            Vert+=20
+                        if aiznemts.krasa!=self.krasa and aiznemts.dama:   
+                            Vert-=20
+                        if aiznemts.krasa==self.krasa and y<4:
+                            Vert+=12
+                        if aiznemts.krasa!=self.krasa and y<4:
+                            Vert-=7    
+                        if aiznemts.krasa==self.krasa and y>=4:
+                            Vert+=15
+                        if aiznemts.krasa!=self.krasa and y>=4:
+                            Vert-=3 
         else:
-            labakavertiba=-math.inf   
             
-    def GajienaParbaude(self,Virsotne,krasa):
-        self.spele.Speletajavertiba
-
-
+             for x in range(SpelesLaukumaIzmers):
+                for y in range(SpelesLaukumaIzmers):
+                    aiznemts=galds.lokacija(x,y).aiznemts
+                    if aiznemts !=None:
+                        if aiznemts.krasa==self.krasa and aiznemts.dama:
+                            Vert+=20
+                        if aiznemts.krasa!=self.krasa and aiznemts.dama:   
+                            Vert-=20
+                        if aiznemts.krasa==self.krasa and y<4:
+                            Vert+=12
+                        if aiznemts.krasa!=self.krasa and y<4:
+                            Vert-=7    
+                        if aiznemts.krasa==self.krasa and y>=4:
+                            Vert+=15
+                        if aiznemts.krasa!=self.krasa and y>=4:
+                            Vert-=3 
+                            
 ####################### speles koka virsotne #########
 class Virsotne:
     def __init__(self, id, gajieni, p1, p2, limenis) :

@@ -2,7 +2,8 @@ import pygame
 import sys
 from pygame.locals import *
 from time import sleep
-
+import math
+import random #nepieciesams pirmajam gajienam #iespejams
 # speletaju krasas
 #       R     G   B
 Balts = (255, 255, 255)
@@ -34,7 +35,11 @@ def main():
     Running = True  # Mainigais ar kuru vares partraukt programams darbibu patraucot while loop
     spele = Spele() #inicializeta kalse spele kura tiks izmantota speles darbibas  gaita
     grf = spele.gr  #ar grafiku saistita apstrade kura izsauc speles izsaukto grafikas klasi
-
+    koks=SpelesKoks() #speles koka funkcijas
+    generetasVirsotnes=[] # koka virsotnes kas tiks glabatas šaja sarakstā 
+    bots=Bots(spele,(0,  0,  0),koks)
+    
+    
     
     
     # Speles galvenais cikls
@@ -55,7 +60,7 @@ def main():
                 pygame.display.update()
                 if spele.beigas()==True:
                         spele=Spele()
-
+                bots.minmax(4,spele,True,spele.atlasits)
             if event.type==pygame.KEYDOWN and event.key==pygame.K_g:
                     spele.mainispeletaju()
                    
@@ -165,12 +170,13 @@ class Spele:
     """
 
     def __init__(self):
-        self.galds1 = Galds()
-        self.gr = Grafika()
-        self.atlasits = None
-        self.speletajs = (255, 255, 255)
-        self.lekt=False
-        self.Gajieni=[]        
+        self.galds1 = Galds() #apzime galda mainigo
+        self.gr = Grafika() #apzime grafikas klases mainigo
+        self.atlasits = None  #atlausita laucina vertiba
+        self.speletajs = (255, 255, 255)    #tagadeja speletaja vertiba
+        self.lekt=False         #vertiba ja var lekt pari 
+        self.Gajieni=[]        #Atlauto gajienu matrica 
+        
         
     def mainispeletaju(self):
         if self.speletajs==(255, 255, 255):
@@ -381,15 +387,30 @@ class laucins:
 ########################################## Bota funkcijas #########################################
 #To be added 
 class Bots:
-    def __init__(self,spele,krasa,dzilums=1) :
+    def __init__(self,spele,krasa,koks,dzilums=1) :
        self.dzilums=dzilums
        self.spele=spele
        self.krasa=krasa
        self.parbaudamais=krasa
-    def minmax(self,dzilums,spele,speletajs):
-        if dzilums==0:
-            if speletajs=='max':
-                pass
+       self.koks=koks
+    def minmax(self,dzilums,spele,MaxGajiens,virsotne):
+        if dzilums==0 and spele.beigas==True:
+            return spele.Speletajavertiba
+        print(virsotne)
+        global id_virsotne
+        self.koks.PievienoVirsotni(id_virsotne,)
+        id_virsotne+=1
+        if MaxGajiens:
+            labakavertiba=-math.inf
+            if virsotne!=None:
+                gajieni=self.spele.galds1.atlautieGajieni(virsotne[0],virsotne[1])
+                print(self.spele.galds1.atlautieGajieni(virsotne[0],virsotne[1]))
+                for gajiens in gajieni:
+                    minmax(dzilums+1,spele,False)        
+
+        else:
+            labakavertiba=-math.inf   
+            
     def GajienaParbaude(self,Virsotne,krasa):
         self.spele.Speletajavertiba
 
@@ -407,7 +428,7 @@ class SpelesKoks:
     def __init__(self):
         self.virstones=[]
         self.loki=dict()        
-    def PievienoVirsotni(self,Virstone):
+    def PievienoVirsotni(self,Virsotne):
         self.virstones.append(Virsotne)
     def PievienoLoku(self,svirsotne,bvirsotne):
         self.loki[svirsotne]=self.loki.get(svirsotne,[])+[bvirsotne]    
@@ -418,7 +439,14 @@ class SpelesKoks:
                 return lieta
     def GetLoki (self,svirstone):
         return self.loki[svirstone]
-            
+    def PrintVirsotnes(self):
+        for x in self.virstones:
+            print(x.id,x.gajieni,x.p1,x.p2,x.limenis)
+    def PrintLoki(self):
+        for x,y in self.loki:
+            print(x,y)        
+             
+           
         
         
         

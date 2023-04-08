@@ -125,8 +125,8 @@ class Grafika:
         self.attelovertibu(spe.SpeletajaVertiba())
         
         if spe.atlasits !=None:
-            self.iekrasoAtzimeto(spe.galds1.atlautieGajieni(spe.atlasits[0],spe.atlasits[1]),spe.atlasits)
-        self.grafKaul(spe.galds1.matrica)    
+            self.iekrasoAtzimeto(spe.galds.atlautieGajieni(spe.atlasits[0],spe.atlasits[1]),spe.atlasits)
+        self.grafKaul(spe.galds.matrica)    
     def krasojums(self):
         for x in range(SpelesLaukumaIzmers):
             for y in range(SpelesLaukumaIzmers):
@@ -186,7 +186,7 @@ class Grafika:
 ################################### speles gaitu saistitas funkcijas ######################
 class Spele:
     def __init__(self):
-        self.galds1 = Galds() #apzime galda mainigo
+        self.galds = Galds() #apzime galda mainigo
         self.gr = Grafika() #apzime grafikas klases mainigo
         self.atlasits = None  #atlausita laucina vertiba
         self.speletajs = (255, 255, 255)    #tagadeja speletaja vertiba
@@ -209,25 +209,25 @@ class Spele:
       #  print(self.peles_pos," Pozicija laucina") #debug teksts prieks peles pozicijas noteiksanas
         if self.peles_pos[0]<SpelesLaukumaIzmers and self.peles_pos[1]<SpelesLaukumaIzmers:   
           if self.atlasits !=None:
-            self.Gajieni=self.galds1.atlautieGajieni(self.atlasits[0],self.atlasits[1],self.lekt)
+            self.Gajieni=self.galds.atlautieGajieni(self.atlasits[0],self.atlasits[1],self.lekt)
           if not self.lekt:
-            a=self.galds1.lokacija(self.peles_pos[0],self.peles_pos[1])
+            a=self.galds.lokacija(self.peles_pos[0],self.peles_pos[1])
             if a.aiznemts!=None and a.aiznemts.krasa==self.speletajs:
                   self.atlasits=self.peles_pos
-            elif self.atlasits!= None and self.peles_pos in self.galds1.atlautieGajieni(self.atlasits[0],self.atlasits[1]):
-                self.galds1.kustiba(self.atlasits[0],self.atlasits[1],self.peles_pos[0],self.peles_pos[1])
-                if self.peles_pos not in self.galds1.apkartejie(self.atlasits[0],self.atlasits[1]):
-                        self.galds1.NonemtKaulinu(self.atlasits[0] + (self.peles_pos[0] - self.atlasits[0]) // 2, self.atlasits[1] + (self.peles_pos[1] - self.atlasits[1]) // 2)
+            elif self.atlasits!= None and self.peles_pos in self.galds.atlautieGajieni(self.atlasits[0],self.atlasits[1]):
+                self.galds.kustiba(self.atlasits[0],self.atlasits[1],self.peles_pos[0],self.peles_pos[1])
+                if self.peles_pos not in self.galds.apkartejie(self.atlasits[0],self.atlasits[1]):
+                        self.galds.NonemtKaulinu(self.atlasits[0] + (self.peles_pos[0] - self.atlasits[0]) // 2, self.atlasits[1] + (self.peles_pos[1] - self.atlasits[1]) // 2)
                         self.lekt=True
                         self.atlasits=self.peles_pos
                         
                 else:
                     self.BeigtGajienu()
         if self.lekt:
-            if self.atlasits!= None and self.peles_pos in self.galds1.atlautieGajieni(self.atlasits[0],self.atlasits[1],self.lekt):
-                self.galds1.kustiba(self.atlasits[0],self.atlasits[1],self.peles_pos[0],self.peles_pos[1])
-                self.galds1.NonemtKaulinu(self.atlasits[0] + (self.peles_pos[0] - self.atlasits[0]) // 2, self.atlasits[1] + (self.peles_pos[1] - self.atlasits[1]) // 2)
-            if self.galds1.atlautieGajieni(self.peles_pos[0],self.peles_pos[1],self.lekt)==[]:
+            if self.atlasits!= None and self.peles_pos in self.galds.atlautieGajieni(self.atlasits[0],self.atlasits[1],self.lekt):
+                self.galds.kustiba(self.atlasits[0],self.atlasits[1],self.peles_pos[0],self.peles_pos[1])
+                self.galds.NonemtKaulinu(self.atlasits[0] + (self.peles_pos[0] - self.atlasits[0]) // 2, self.atlasits[1] + (self.peles_pos[1] - self.atlasits[1]) // 2)
+            if self.galds.atlautieGajieni(self.peles_pos[0],self.peles_pos[1],self.lekt)==[]:
                 self.BeigtGajienu()
             else:
                 self.atlasits=self.peles_pos              
@@ -250,13 +250,13 @@ class Spele:
         flagB=False
         for x in range(SpelesLaukumaIzmers):
                for y in range(SpelesLaukumaIzmers):
-                   sp=self.galds1.lokacija(x,y)
+                   sp=self.galds.lokacija(x,y)
                    if sp.krasa==Melns:
                        if sp.aiznemts!=None:
-                        if self.galds1.lokacija(x,y).aiznemts.krasa == (255, 255, 255) :
+                        if self.galds.lokacija(x,y).aiznemts.krasa == (255, 255, 255) :
                             skaitsW=skaitsW+1
 
-                        elif self.galds1.lokacija(x,y).aiznemts.krasa == (0, 0, 0) :
+                        elif self.galds.lokacija(x,y).aiznemts.krasa == (0, 0, 0) :
                             skaitsB=skaitsB+1
         if skaitsW==0:
             flagW=True
@@ -270,7 +270,7 @@ class Spele:
         skaits=0   
         for x in range(SpelesLaukumaIzmers):
                for y in range(SpelesLaukumaIzmers):
-                   sp=self.galds1.lokacija(x,y)
+                   sp=self.galds.lokacija(x,y)
                    if sp.krasa==Melns:
                        if sp.aiznemts!=None:
                            
@@ -422,20 +422,20 @@ class Bots:
     def GajienaIegusana(self,spele):
         for x in range(SpelesLaukumaIzmers) :               
             for y in range(SpelesLaukumaIzmers) :  
-                if spele.galds1.atlautieGajieni(self, x, y, self.spele.lekt)!=[] and spele.galds1.aiznemts!=None and spele.galds1.aiznemts.krasa==self.spele.speletajs :
-                    yield (x,y,spele.galds1.atlautieGajieni(self, x, y, self.spele.lekt))
+                if spele.galds.atlautieGajieni(self, x, y, self.spele.lekt)!=[] and spele.galds.aiznemts!=None and spele.galds.aiznemts.krasa==self.spele.speletajs :
+                    yield (x,y,spele.galds.atlautieGajieni(self, x, y, self.spele.lekt))
     def VisuGajienuIegusana(self,spele):
         IespGa=[]
         for x in range(SpelesLaukumaIzmers) :               
             for y in range(SpelesLaukumaIzmers) :  
-                if spele.galds1.atlautieGajieni(self, x, y, self.spele.lekt)!=[] and spele.galds1.aiznemts!=None and spele.galds1.aiznemts.krasa==self.spele.speletajs :
-                    IespGa.append (x,y,spele.galds1.atlautieGajieni(self, x, y, self.spele.lekt))       
+                if spele.galds.atlautieGajieni(self, x, y, self.spele.lekt)!=[] and spele.galds.aiznemts!=None and spele.galds.aiznemts.krasa==self.spele.speletajs :
+                    IespGa.append (x,y,spele.galds.atlautieGajieni(self, x, y, self.spele.lekt))       
         return IespGa
     def KaulinuDaudzums(self,spele):
         Kaul=0
         for x in range(SpelesLaukumaIzmers):
                 for y in range(SpelesLaukumaIzmers):
-                    aiznemts=spele.galds1.lokacija(x,y).aiznemts
+                    aiznemts=spele.galds.lokacija(x,y).aiznemts
                     if aiznemts !=None:
                         Kaul+=1
         return Kaul 
@@ -451,7 +451,7 @@ class Bots:
         skaits=0   
         for x in range(SpelesLaukumaIzmers):
                for y in range(SpelesLaukumaIzmers):
-                   sp=spele.galds1.lokacija(x,y)
+                   sp=spele.galds.lokacija(x,y)
                    if sp.krasa==Melns:
                        if sp.aiznemts!=None:
                            
@@ -463,7 +463,7 @@ class Bots:
     
     def VertejumsGalda(self,spele):
         Vert=0
-        galds=spele.galds1
+        galds=spele.galds
         if self.krasa==(255, 255, 255):
             for x in range(SpelesLaukumaIzmers):
                 for y in range(SpelesLaukumaIzmers):

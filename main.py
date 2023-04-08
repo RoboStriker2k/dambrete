@@ -10,13 +10,13 @@ Melns = (0,  0,  0)
 fonakrasa = (37, 216, 85)
 fons2krasa = (88, 206, 202)
 iekrasots=(69,69,69)
-# logu izmers
-width = 800
-height = 600
 
+# logu izmers
+height = 600  #loga augstums, izmatots gan lauku grafikai gan citas vietas
+width = height+200
 # speles iestatijumi
 SpelesLaukumaIzmers = 7 # maina speles laukuma lielumu ( domats rindu un kolonu skaits)
-kvadrataizmers = height/SpelesLaukumaIzmers
+kvadrataizmers = height/SpelesLaukumaIzmers # Laukumu kvadrātu izmērs | lietots gan grafikai, gan saskarsmei.
 
 # Virzienu definicija
 KA = "KA"  # kreisais augšejais
@@ -32,37 +32,14 @@ clock = pygame.time.Clock()
 
 def main():
     Running = True  # Mainigais ar kuru vares partraukt programams darbibu patraucot while loop
+    spele = Spele() #inicializeta kalse spele kura tiks izmantota speles darbibas  gaita
+    grf = spele.gr  #ar grafiku saistita apstrade kura izsauc speles izsaukto grafikas klasi
 
-  
-
-
-    spele = Spele()
-    grf = spele.gr
-    #laukumavertibas1 = spele.galds1.atgriezt_laukumu()
-   
-    # print("Arpus glada check=", spele.galds1.ArPusGalda(0, 2))
-    # print("Atlautie gajieni=", spele.galds1.atlautieGajieni(0, 2))
-    # print("vispariga kustiba=", spele.galds1.vienkarsakustiba(0, 2))
-    # spele.galds1.kustiba(0, 2, 1, 3)
-
-    # print("Atlautie gajieni=", spele.galds1.atlautieGajieni(1, 3))
-    # print("vispariga kustiba=", spele.galds1.vienkarsakustiba(1, 3))
-
-    # print("Atlautie gajieni=", spele.galds1.atlautieGajieni(1, 5))
-    # print("vispariga kustiba=", spele.galds1.vienkarsakustiba(1, 5))
-    # spele.galds1.kustiba(1, 5, 2, 4)
-    # print("Atlautie gajieni=", spele.galds1.atlautieGajieni(2, 4))
-    # print("vispariga kustiba=", spele.galds1.vienkarsakustiba(2, 4))
-    # spele.galds1.kustiba(2, 4, 0, 2)
     
-    # spele.galds1.matrica[1][3].aiznemts.dama = True
+    
+    # Speles galvenais cikls
     while Running == True:
         grf.update(spele)
-    
-        # grf.grafika()
-        # grf.krasojums()
-        # grf.grafKaul(spele.galds1.matrica)
-        
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -413,7 +390,8 @@ class Bots:
         if dzilums==0:
             if speletajs=='max':
                 pass
-
+    def GajienaParbaude(self,Virsotne,krasa):
+        self.spele.Speletajavertiba
 
 
 ####################### speles koka virsotne #########
@@ -433,6 +411,17 @@ class SpelesKoks:
         self.virstones.append(Virsotne)
     def PievienoLoku(self,svirsotne,bvirsotne):
         self.loki[svirsotne]=self.loki.get(svirsotne,[])+[bvirsotne]    
+    def GetVirsotne(self,Virsotne):
+        saraksts=self.virstones.copy()
+        for lieta in saraksts:
+            if lieta.id==Virsotne.id:
+                return lieta
+    def GetLoki (self,svirstone):
+        return self.loki[svirstone]
+            
+        
+        
+        
 
 
 

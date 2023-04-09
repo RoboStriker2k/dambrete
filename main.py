@@ -35,10 +35,11 @@ laukums = pygame.Surface((height, height))  # W H
 kvadra = pygame.Surface((kvadrataizmers, kvadrataizmers))
 kvadra2 = pygame.Surface((kvadrataizmers, kvadrataizmers))  # W H
 panelis2 = pygame.Surface((width-height, height))
-
+#izmantotie fonti
 font1 = pygame.font.Font(None, 50)
 font2 = pygame.font.Font(None, 25)
 clock = pygame.time.Clock()
+#teksts kas tiek rādits grafiskaja vide
 teksts = font1.render('Dambrete', False, 'black')
 teksts2 = font2.render('Speletaja Vertiba=', False, 'black')
 teksts4 = font2.render('Poga G - mainit pusi', False, 'black')
@@ -74,7 +75,7 @@ def main():
     grf = spele.gr  # ar grafiku saistita apstrade kura izsauc speles izsaukto grafikas klasi
     ArBotu = 1
     koks = SpelesKoks()  # speles koka funkcijas
-    generetasVirsotnes = []  # koka virsotnes kas tiks glabatas šaja sarakstā
+      # koka virsotnes kas tiks glabatas šaja sarakstā
     while Running == True:
         
         if ArBotu == 0:
@@ -112,18 +113,19 @@ def main():
         elif ArBotu == 1:
             vertiba = 0
             spele2 = deepcopy(spele)
+            bots = Bots(spele, (0,  0,  0), koks, 6)
             if spele.speletajs == Balts:
-                    bots = Bots(spele2, (0,  0,  0), koks, 2)
+                    
                     bots.gajiens(spele)
                     vertiba = bots.VertejumsGalda(spele)
-
+                    spele.speletajs=Melns
                 # ve = DecodeBotaReturn((bots.minmax(2, spele, Melns)))
                  #  virs = Virsotne(ve[0], ve[1], ve[2], ve[3], 0)
             #   ve2 = DecodeBotaReturn((bots2.minmax(2, spele,Balts)))
                  #  koks.PievienoVirsotni(virs)
                  #  generetasVirsotnes.append(virs)
                 #   koks.PrintVirsotnes()
-
+            
             grf.update(spele)
             grf.attelovertibu(vertiba)
             pygame.display.update()
@@ -135,6 +137,7 @@ def main():
                     if event.type == MOUSEBUTTONDOWN:
                      #   print(spele.Gajieni,spele.atlasits,"Pirms")
                         spele.SpGajiens()
+                        
                        # print(spele.Gajieni,spele.atlasits,"pec")
 
                       #  print(spele.Gajieni,spele.atlasits,"Talak")
@@ -496,10 +499,10 @@ class kaulins:
     def __init__(self, krasa, dama=False):
         self.krasa = krasa
         self.dama = dama
-
+        self.vertiba=1
     def damas(self):
         self.dama = True
-
+        self.vertiba=2
 ######################################### Laucina definicija  ##########################################
 
 
@@ -524,13 +527,17 @@ class Bots:
             self.pretineika = (255, 255, 255)
         self.koks = koks
         self.parbaudamias = None
+    
+            
     def gajiens(self,spele):
         if self.VaiVelIrParastie==False:
             ArBotu=0
             print('Iestrega Ar Visam damam') 
         self.minimaxGajiens(spele)       
     def minimaxGajiens(self,spele):
-        LabakaPos,  LabakaisGajiens,vertiba= self.minmax(self.dzilums-1,spele,'max')
+        huh=self.minmax(self.dzilums-1,spele,'max')
+        print (huh)
+        LabakaPos,  LabakaisGajiens,vertiba= huh
         self.VeiktGajienu(spele,LabakaPos,LabakaisGajiens)
         return
     def minmax(self, dzilums, spele, Speletajs):
@@ -560,6 +567,7 @@ class Bots:
                         if (gajienavertiba == -math.inf and LabakaPos is None):
                             LabakaPos = (gajieni[0], gajieni[1])
                             LabakaisGajiens = (lauks[0], lauks[1])
+                    print('max dzilums ---',LabakaPos,  LabakaisGajiens, vertiba)
                     return LabakaPos,  LabakaisGajiens, vertiba
             else:
                 vertiba = math.inf
@@ -585,6 +593,7 @@ class Bots:
                         if (gajienavertiba == -math.inf and LabakaPos is None):
                             LabakaPos = (gajieni[0], gajieni[1])
                             LabakaisGajiens = (lauks[0], lauks[1])
+                    print('min dzilums ---',LabakaPos,  LabakaisGajiens, vertiba)        
                     return LabakaPos,  LabakaisGajiens, vertiba
         else:
             if Speletajs == 'max':
@@ -600,6 +609,14 @@ class Bots:
                         spele.speletajs = self.krasa
                         self.VeiktGajienu(spele, gajieni, lauks)
                         gajienavertiba = self.VertejumsGalda(spele)
+                        if spele.beigas():
+                            vertiba=math.inf
+                        else:
+                            _,_, vertiba=self.minmax(dzilums-1,spele,'min')
+                        if vertiba is None:
+                            continue    
+                        self.krasa, self.pretineika = self.pretineika, self.krasa
+                        spele.speletajs = self.krasa
                         if gajienavertiba > vertiba:
                             vertiba = gajienavertiba
                             LabakaPos = gajieni
@@ -611,6 +628,7 @@ class Bots:
                         if (gajienavertiba == -math.inf and LabakaPos is None):
                             LabakaPos = (gajieni[0], gajieni[1])
                             LabakaisGajiens = (lauks[0], lauks[1])
+                    print('max  ---',LabakaPos,  LabakaisGajiens, vertiba)
                     return LabakaPos,  LabakaisGajiens, vertiba
             else:
                 vertiba = math.inf
@@ -625,6 +643,16 @@ class Bots:
                         spele.speletajs = self.krasa
                         self.VeiktGajienu(spele, gajieni, lauks)
                         gajienavertiba = self.VertejumsGalda(spele)
+                        if spele.beigas():
+                            vertiba=math.inf
+                        else:
+                            h=self.minmax(dzilums-1,spele,'max')
+                            _,_, vertiba=h
+                            print(h)
+                        if vertiba is None:
+                            continue  
+                        self.krasa, self.pretineika = self.pretineika, self.krasa
+                        spele.speletajs = self.krasa
                         if gajienavertiba < vertiba:
                             vertiba = gajienavertiba
                             LabakaPos = gajieni
@@ -636,6 +664,7 @@ class Bots:
                         if (gajienavertiba == -math.inf and LabakaPos is None):
                             LabakaPos = (gajieni[0], gajieni[1])
                             LabakaisGajiens = (lauks[0], lauks[1])
+                    print('min ---',LabakaPos,  LabakaisGajiens, vertiba)
                     return LabakaPos,  LabakaisGajiens, vertiba
 
     def VeiktGajienu(self, spele, PasPos, BeiguPos):

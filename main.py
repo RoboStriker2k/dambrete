@@ -3,7 +3,7 @@ import sys
 from pygame.locals import *
 import math
 from copy import deepcopy  # galda kopešana
-import random  # nepieciesams pirmajam gajienam #iespejams
+
 # speletaju krasas
 #       R     G   B
 Balts = (255, 255, 255)
@@ -41,60 +41,45 @@ font2 = pygame.font.Font(None, 25)
 clock = pygame.time.Clock()
 teksts = font1.render('Dambrete', False, 'black')
 teksts2 = font2.render('Speletaja Vertiba=', False, 'black')
-
-        # importe attelus un parveido to izmeru
+teksts4 = font2.render('Poga G - mainit pusi', False, 'black')
+teksts5 = font2.render('Poga h - reset laukums', False, 'black')
+teksts6 = font2.render('Poga 0- 1v1 No bot', False, 'black')
+teksts7 = font2.render('Poga 1- 1v1 Ar bot', False, 'black')
+teksts8 = font2.render('Poga 2- 1v1 Abi bot', False, 'black')
+# importe attelus un parveido to izmeru
 SP1att = pygame.image.load('atteli/speletajs1.png')
 SP2att = pygame.image.load('atteli/speletajs2.png')
 SP1datt = pygame.image.load('atteli/speletajs1dama.png')
 SP2datt = pygame.image.load('atteli/speletajs2dama.png')
 SP1att = pygame.transform.scale(SP1att, (kvadrataizmers, kvadrataizmers))
 SP2att = pygame.transform.scale(SP2att, (kvadrataizmers, kvadrataizmers))
-SP1datt = pygame.transform.scale( SP1datt, (kvadrataizmers, kvadrataizmers))
+SP1datt = pygame.transform.scale(SP1datt, (kvadrataizmers, kvadrataizmers))
 SP2datt = pygame.transform.scale(SP2datt, (kvadrataizmers, kvadrataizmers))
+##########################################################################
+# mainigais ar kuru kontrole cik botu # 0 - nav # 1 - viens # 2 -divi
 
-ArBotu = 1
+
+def DecodeBotaReturn(teksts):
+    #reizem atgriez atbildi par isu, kad nav vertibu 
+    pir = teksts[0]
+    gajiens = (pir[0], pir[1])
+    # atgriez visu nepieciesamo virsotnei
+    print(gajiens, pir[2], teksts[1], teksts[2])
+    return gajiens, pir[2], teksts[1], teksts[2]
 
 
 def main():
     Running = True  # Mainigais ar kuru vares partraukt programams darbibu patraucot while loop
     spele = Spele()  # inicializeta kalse spele kura tiks izmantota speles darbibas  gaita
     grf = spele.gr  # ar grafiku saistita apstrade kura izsauc speles izsaukto grafikas klasi
-
-    if ArBotu == 0:
-        # Speles galvenais cikls Bez Algoritma, diviem speletajiem katram nemot gajienu
-        while Running == True:
-            grf.update(spele)
-            pygame.display.update()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    Running = False
-                    sys.exit()
-                if event.type == MOUSEBUTTONDOWN:
-                 #   print(spele.Gajieni,spele.atlasits,"Pirms")
-                    spele.SpGajiens()
-                   # print(spele.Gajieni,spele.atlasits,"pec")
-
-                  #  print(spele.Gajieni,spele.atlasits,"Talak")
-                    pygame.display.update()
-                    if spele.beigas() == True:
-                        spele = Spele()
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_g:
-                    spele.mainispeletaju()
-    
-    
-    elif ArBotu==1:
-        koks = SpelesKoks()  # speles koka funkcijas
-        generetasVirsotnes = []  # koka virsotnes kas tiks glabatas šaja sarakstā
+    ArBotu = 1
+    koks = SpelesKoks()  # speles koka funkcijas
+    generetasVirsotnes = []  # koka virsotnes kas tiks glabatas šaja sarakstā
+    while Running == True:
         
-        spele2=deepcopy(spele)
-        while Running == True:
-            
-            spele2=deepcopy(spele)
-            bots = Bots(spele2, (0,  0,  0), koks, 3)
-            bots2 = Bots(spele2, (255,  255, 255), koks, 3)
-            print(bots.minmax(2, spele2, Melns))
-         
+        if ArBotu == 0:
+           # Speles galvenais cikls Bez Algoritma, diviem speletajiem katram nemot gajienu
+
             grf.update(spele)
             pygame.display.update()
             for event in pygame.event.get():
@@ -103,64 +88,139 @@ def main():
                     Running = False
                     sys.exit()
                 if event.type == MOUSEBUTTONDOWN:
-                 #   print(spele.Gajieni,spele.atlasits,"Pirms")
                     spele.SpGajiens()
-                   # print(spele.Gajieni,spele.atlasits,"pec")
-
-                  #  print(spele.Gajieni,spele.atlasits,"Talak")
                     pygame.display.update()
                     if spele.beigas() == True:
                         spele = Spele()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_g:
                     spele.mainispeletaju()
-    
-    
-    
-    
+                    
+                
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_h:
+                        spele.galds.__init__()
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_z:
+                        koks.PrintVirsotnes()
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_c:
+                        koks.PrintLoki() 
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_0:
+                        ArBotu=0
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_1:
+                        ArBotu=1
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_2:
+                        ArBotu=2              
+
+        elif ArBotu == 1:
+            vertiba = 0
+            spele2 = deepcopy(spele)
+            if spele.speletajs == Balts:
+                    bots = Bots(spele2, (0,  0,  0), koks, 2)
+                    bots.gajiens(spele)
+                    vertiba = bots.VertejumsGalda(spele)
+
+                # ve = DecodeBotaReturn((bots.minmax(2, spele, Melns)))
+                 #  virs = Virsotne(ve[0], ve[1], ve[2], ve[3], 0)
+            #   ve2 = DecodeBotaReturn((bots2.minmax(2, spele,Balts)))
+                 #  koks.PievienoVirsotni(virs)
+                 #  generetasVirsotnes.append(virs)
+                #   koks.PrintVirsotnes()
+
+            grf.update(spele)
+            grf.attelovertibu(vertiba)
+            pygame.display.update()
+            for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        Running = False
+                        sys.exit()
+                    if event.type == MOUSEBUTTONDOWN:
+                     #   print(spele.Gajieni,spele.atlasits,"Pirms")
+                        spele.SpGajiens()
+                       # print(spele.Gajieni,spele.atlasits,"pec")
+
+                      #  print(spele.Gajieni,spele.atlasits,"Talak")
+                        pygame.display.update()
+                        if spele.beigas() == True:
+                            spele = Spele()
+                    if event.type == pygame.KEYDOWN and event.key == pygame.K_g:
+                        spele.mainispeletaju()
+                    
+                    if event.type == pygame.KEYDOWN and event.key == pygame.K_h:
+                        spele.galds.__init__()
+                    if event.type == pygame.KEYDOWN and event.key == pygame.K_z:
+                        koks.PrintVirsotnes()
+                    if event.type == pygame.KEYDOWN and event.key == pygame.K_c:
+                        koks.PrintLoki()                
+                    if event.type == pygame.KEYDOWN and event.key == pygame.K_0:
+                        ArBotu=0
+                    if event.type == pygame.KEYDOWN and event.key == pygame.K_1:
+                        ArBotu=1
+                    if event.type == pygame.KEYDOWN and event.key == pygame.K_2:
+                        ArBotu=2    
+                         
     # Speles galvenais cikls   Ar algoritma implementāciju abiem speletajiem
-    else:
-        koks = SpelesKoks()  # speles koka funkcijas
-        generetasVirsotnes = []  # koka virsotnes kas tiks glabatas šaja sarakstā
-        bots = Bots(spele, (0,  0,  0), koks, 3)
-        bots2 = Bots(spele, (255,  255, 255), koks, 3)
+        else:
       
-        while Running == True:
-            print(bots.minmax(2, spele, Melns))
-            print(bots2.minmax(2, spele, Balts))
+            vertiba = 0
+            spele2 = deepcopy(spele)
+            if spele.speletajs == Melns:
+                    bots = Bots(spele2, (0,  0,  0), koks, 3)
+                    bots.minmax(2, spele, Melns)
+                    vertiba = bots.VertejumsGalda(spele)
+            else:
+                    bots2 = Bots(spele2, (255,  255, 255), koks, 3)
+                    bots2.minmax(2, spele, Balts)
+                    vertiba = bots2.VertejumsGalda(spele)
+                # ve = DecodeBotaReturn((bots.minmax(2, spele, Melns)))
+                 #  virs = Virsotne(ve[0], ve[1], ve[2], ve[3], 0)
+            #   ve2 = DecodeBotaReturn((bots2.minmax(2, spele,Balts)))
+                 #  koks.PievienoVirsotni(virs)
+                 #  generetasVirsotnes.append(virs)
+                #   koks.PrintVirsotnes()
+
             grf.update(spele)
+            grf.attelovertibu(vertiba)
             pygame.display.update()
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    Running = False
-                    sys.exit()
-                if event.type == MOUSEBUTTONDOWN:
-                 #   print(spele.Gajieni,spele.atlasits,"Pirms")
-                    spele.SpGajiens()
-                   # print(spele.Gajieni,spele.atlasits,"pec")
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        Running = False
+                        sys.exit()
+                    if event.type == MOUSEBUTTONDOWN:
+                     #   print(spele.Gajieni,spele.atlasits,"Pirms")
+                        spele.SpGajiens()
+                       # print(spele.Gajieni,spele.atlasits,"pec")
 
-                  #  print(spele.Gajieni,spele.atlasits,"Talak")
-                    pygame.display.update()
-                    if spele.beigas() == True:
-                        spele = Spele()
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_g:
-                    spele.mainispeletaju()
+                      #  print(spele.Gajieni,spele.atlasits,"Talak")
+                        pygame.display.update()
+                        if spele.beigas() == True:
+                            spele = Spele()
+                    if event.type == pygame.KEYDOWN and event.key == pygame.K_g:
+                        spele.mainispeletaju()
 
+                    if event.type == pygame.KEYDOWN and event.key == pygame.K_h:
+                        spele.galds.__init__()
+                    if event.type == pygame.KEYDOWN and event.key == pygame.K_z:
+                        koks.PrintVirsotnes()
+                    if event.type == pygame.KEYDOWN and event.key == pygame.K_c:
+                        koks.PrintLoki()      
+                    if event.type == pygame.KEYDOWN and event.key == pygame.K_0:
+                        ArBotu=0
+                    if event.type == pygame.KEYDOWN and event.key == pygame.K_1:
+                        ArBotu=1
+                    if event.type == pygame.KEYDOWN and event.key == pygame.K_2:
+                        ArBotu=2  
 
 #################################### SPeles grafikas saistitas funkcijas #############
 class Grafika:
     def __init__(self):
 
-        clock.tick(10)
-
-       
-
+        clock.tick(60)
 
     # iekrāso kvadrātu laukumus
+
     def update(self, spe):
         self.grafika()
         self.krasojums()
-        self.attelovertibu(spe.SpeletajaVertiba())
 
         if spe.atlasits != None:
             self.iekrasoAtzimeto(spe.galds.atlautieGajieni(
@@ -175,8 +235,8 @@ class Grafika:
                     screen.blit(
                         kvadra, (kvadrataizmers*x, kvadrataizmers*y))
                 elif (x % 2 == 0) and (y % 2 != 0):
-                     screen.blit(
-                         kvadra, (kvadrataizmers*x, kvadrataizmers*y))
+                    screen.blit(
+                        kvadra, (kvadrataizmers*x, kvadrataizmers*y))
 
     def grafika(self):
         screen.blit(laukums, (0, 0))
@@ -187,6 +247,11 @@ class Grafika:
         screen.blit(teksts2, (600, 50))
         kvadra.fill('white')
         kvadra2.fill(iekrasots)
+        screen.blit(teksts4, (600, 100))
+        screen.blit(teksts5, (600, 200))
+        screen.blit(teksts6, (600, 250))
+        screen.blit(teksts7, (600, 300))
+        screen.blit(teksts8, (600, 350))
 
     def grafKaul(self, matrica):  # attelo kauliņus uz laukuma
         for x in range(SpelesLaukumaIzmers):
@@ -194,18 +259,18 @@ class Grafika:
                 if matrica[x][y].aiznemts != None:
                     if matrica[x][y].aiznemts.krasa == (255, 255, 255):
                         if not matrica[x][y].aiznemts.dama:
-                             screen.blit(
-                                 SP1att, (kvadrataizmers*x, kvadrataizmers*y))
+                            screen.blit(
+                                SP1att, (kvadrataizmers*x, kvadrataizmers*y))
                         else:
-                             screen.blit(
+                            screen.blit(
                                 SP1datt, (kvadrataizmers*x, kvadrataizmers*y))
                     elif matrica[x][y].aiznemts.krasa == (0,  0,  0):
                         if not matrica[x][y].aiznemts.dama:
                             screen.blit(
-                                 SP2att, (kvadrataizmers*x, kvadrataizmers*y))
+                                SP2att, (kvadrataizmers*x, kvadrataizmers*y))
                         else:
-                             screen.blit(
-                                 SP2datt, (kvadrataizmers*x, kvadrataizmers*y))
+                            screen.blit(
+                                SP2datt, (kvadrataizmers*x, kvadrataizmers*y))
                     else:
 
                         pass
@@ -213,8 +278,8 @@ class Grafika:
     def iekrasoAtzimeto(self, lauk, atzime):
         if lauk != None:
             for lauki1 in lauk:
-                 screen.blit(
-                     kvadra2, (lauki1[0]*kvadrataizmers, lauki1[1]*kvadrataizmers))
+                screen.blit(
+                    kvadra2, (lauki1[0]*kvadrataizmers, lauki1[1]*kvadrataizmers))
         if atzime != None:
             screen.blit(
                 kvadra2, (atzime[0]*kvadrataizmers, atzime[1]*kvadrataizmers))
@@ -222,7 +287,7 @@ class Grafika:
     def attelovertibu(self, vertiba):
         vertiba = str(vertiba)
         teksts3 = font2.render(vertiba, False, 'black')
-        screen.blit(teksts3, (780, 50))
+        screen.blit(teksts3, (760, 50))
 
 ################################### speles gaitu saistitas funkcijas ######################
 
@@ -235,9 +300,11 @@ class Spele:
         self.speletajs = (255, 255, 255)  # tagadeja speletaja vertiba
         self.lekt = False  # vertiba ja var lekt pari
         self.Gajieni = []  # Atlauto gajienu matrica
+
     def AtgrieztGaldaKopiju(self):
-        gald=deepcopy(self.galds)
+        gald = deepcopy(self.galds)
         return gald
+
     def mainispeletaju(self):
         if self.speletajs == (255, 255, 255):
             self.speletajs = (0, 0, 0)
@@ -316,19 +383,6 @@ class Spele:
         else:
             return False
 
-    def SpeletajaVertiba(self):
-        skaits = 0
-        for x in range(SpelesLaukumaIzmers):
-            for y in range(SpelesLaukumaIzmers):
-                sp = self.galds.lokacija(x, y)
-                if sp.krasa == Melns:
-                    if sp.aiznemts != None:
-
-                        if sp.aiznemts.krasa == self.speletajs:
-                            skaits = skaits + sp.aiznemts.vertiba
-
-        return skaits
-
 
 ################################################## Speles galdu saistitas funkcijas #############################
 class Galds:
@@ -361,7 +415,6 @@ class Galds:
     def lokacija(self, x, y):  # atgriez matricas elementu
         return self.matrica[x][y]
 
-        
     def relativitate(self, virziens, x, y):  # atgriez apkartejo laukumu kordināti
         match virziens:
             case "KZ":
@@ -443,11 +496,10 @@ class kaulins:
     def __init__(self, krasa, dama=False):
         self.krasa = krasa
         self.dama = dama
-        self.vertiba = 1
 
     def damas(self):
         self.dama = True
-        self.vertiba = 2
+
 ######################################### Laucina definicija  ##########################################
 
 
@@ -472,7 +524,15 @@ class Bots:
             self.pretineika = (255, 255, 255)
         self.koks = koks
         self.parbaudamias = None
-
+    def gajiens(self,spele):
+        if self.VaiVelIrParastie==False:
+            ArBotu=0
+            print('Iestrega Ar Visam damam') 
+        self.minimaxGajiens(spele)       
+    def minimaxGajiens(self,spele):
+        LabakaPos,  LabakaisGajiens,vertiba= self.minmax(self.dzilums-1,spele,'max')
+        self.VeiktGajienu(spele,LabakaPos,LabakaisGajiens)
+        return
     def minmax(self, dzilums, spele, Speletajs):
         # zem speletājs domāts min or max gajiens
         if dzilums == 0:
@@ -482,7 +542,7 @@ class Bots:
                 LabakaisGajiens = None
                 Iespejamie_Gajieni = self.GajienaIegusana(spele)
                 for gajieni in Iespejamie_Gajieni:
-                   #  print(gajieni)
+                    #  print(gajieni)
                     for lauks in gajieni[2]:
                         # print(lauks)
                         self.krasa, self.pretineika = self.pretineika, self.krasa
@@ -507,7 +567,7 @@ class Bots:
                 LabakaisGajiens = None
                 Iespejamie_Gajieni = self.GajienaIegusana(spele)
                 for gajieni in Iespejamie_Gajieni:
-                   #  print(gajieni)
+                    #  print(gajieni)
                     for lauks in gajieni[2]:
                         # print(lauks)
                         self.krasa, self.pretineika = self.pretineika, self.krasa
@@ -533,7 +593,7 @@ class Bots:
                 LabakaisGajiens = None
                 Iespejamie_Gajieni = self.GajienaIegusana(spele)
                 for gajieni in Iespejamie_Gajieni:
-                   #  print(gajieni)
+                    #  print(gajieni)
                     for lauks in gajieni[2]:
                         # print(lauks)
                         self.krasa, self.pretineika = self.pretineika, self.krasa
@@ -558,7 +618,7 @@ class Bots:
                 LabakaisGajiens = None
                 Iespejamie_Gajieni = self.GajienaIegusana(spele)
                 for gajieni in Iespejamie_Gajieni:
-                   #  print(gajieni)
+                    #  print(gajieni)
                     for lauks in gajieni[2]:
                         # print(lauks)
                         self.krasa, self.pretineika = self.pretineika, self.krasa
@@ -583,24 +643,38 @@ class Bots:
             spele.BeigtGajienu()
         if not spele.lekt:
             laucin = spele.galds.lokacija(BeiguPos[0], BeiguPos[1])
-            if laucin.aiznemts != None and laucin.aiznemts.krasa == self.speletajs.krasa:
-                PasPos=BeiguPos
-            elif PasPos!=None and BeiguPos in spele.galds.atlautieGajieni (PasPos[0],PasPos[1]) :
-                spele.galds.kustiba(PasPos[0],PasPos[1],BeiguPos[0], BeiguPos[1])
-                if BeiguPos not in spele.galds.apkartejie(PasPos[0],PasPos[1]):
-                    spele.galds.NonemtKaulinu(PasPos[0]+(BeiguPos[0]-PasPos[0]),PasPos[1]+(BeiguPos[1]-PasPos[1]))
-                    spele.lekt==True
-                    PasPos=BeiguPos
-                    BeiguPos=spele.galds.atlautieGajieni (PasPos[0],PasPos[1])
-                    if BeiguPos!=[]:
-                        self.VeiktGajienu(spele,PasPos,BeiguPos)
+            if laucin.aiznemts != None and laucin.aiznemts.krasa == self.krasa:
+                PasPos = BeiguPos
+            elif PasPos != None and BeiguPos in spele.galds.atlautieGajieni(PasPos[0], PasPos[1]):
+                spele.galds.kustiba(
+                    PasPos[0], PasPos[1], BeiguPos[0], BeiguPos[1])
+                if BeiguPos not in spele.galds.apkartejie(PasPos[0], PasPos[1]):
+                    spele.galds.NonemtKaulinu(PasPos[0]+(BeiguPos[0]-PasPos[0])//2, PasPos[1]+(BeiguPos[1]-PasPos[1])//2)
+                    spele.lekt == True
+                    PasPos = BeiguPos
+                    BeiguPos = spele.galds.atlautieGajieni(
+                        PasPos[0], PasPos[1])
+                    if BeiguPos != []:
+                        self.VeiktGajienu(spele, PasPos, BeiguPos[0])
                         spele.BeigtGajienu()
         if self.spele.lekt:
-            if PasPos!=None and BeiguPos in spele.galds.atlautieGajieni (PasPos[0],PasPos[1],spele.lekt) :
-               spele.galds.kustiba(PasPos[0],PasPos[1],BeiguPos[0], BeiguPos[1])        
-               spele.galds.NonemtKaulinu(PasPos[0]+(BeiguPos[0]-PasPos[0]),PasPos[1]+(BeiguPos[1]-PasPos[1]))       
-            if  spele.galds.atlautieGajieni (PasPos[0],PasPos[1],spele.lekt)==[]:
+            if PasPos != None and BeiguPos in spele.galds.atlautieGajieni(PasPos[0], PasPos[1], spele.lekt):
+                spele.galds.kustiba(
+                    PasPos[0], PasPos[1], BeiguPos[0], BeiguPos[1])
+                spele.galds.NonemtKaulinu(
+                    PasPos[0]+(BeiguPos[0]-PasPos[0])//2, PasPos[1]+(BeiguPos[1]-PasPos[1])//2)
+            if spele.galds.atlautieGajieni(PasPos[0], PasPos[1], spele.lekt) == []:
                 spele.BeigtGajienu()
+            else:
+                PasPos = BeiguPos
+                BeiguPos = spele.galds.atlautieGajieni(
+                    PasPos[0], PasPos[1], True)
+                if BeiguPos == []:
+                    self.VeiktGajienu(spele, PasPos, BeiguPos[0])
+                spele. BeigtGajienu()
+        if spele.lekt != True:
+            spele.speletajs = self.pretineika
+
     def GajienaIegusana(self, spele):
         for x in range(SpelesLaukumaIzmers):
             for y in range(SpelesLaukumaIzmers):
@@ -665,9 +739,9 @@ class Bots:
                         if aiznemts.krasa != self.krasa and y < 4:
                             Vert -= 7
                         if aiznemts.krasa == self.krasa and y >= 4:
-                            Vert += 15
+                            Vert += 12
                         if aiznemts.krasa != self.krasa and y >= 4:
-                            Vert -= 3
+                            Vert -= 7
         else:
 
             for x in range(SpelesLaukumaIzmers):
@@ -683,18 +757,19 @@ class Bots:
                         if aiznemts.krasa != self.krasa and y < 4:
                             Vert -= 7
                         if aiznemts.krasa == self.krasa and y >= 4:
-                            Vert += 15
+                            Vert += 12
                         if aiznemts.krasa != self.krasa and y >= 4:
-                            Vert -= 3
+                            Vert -= 7
         return Vert
 ####################### speles koka virsotne #########
 
 
 class Virsotne:
-    def __init__(self, gajiens, gajieni, vertiba, limenis):
+    def __init__(self, gajiens, gajieni, labakais, vertiba, limenis):
         self.gajiens = gajiens
         self.gajieni = gajieni
         self.vertiba = vertiba
+        self.labakais = labakais
         self.limenis = limenis
 ##################### Speles koks ##################
 
@@ -721,7 +796,11 @@ class SpelesKoks:
 
     def PrintVirsotnes(self):
         for x in self.virstones:
-            print(x.gajiens, x. gajieni, x.vertiba, x. limenis)
+            print(x.gajiens,
+                  x.gajieni,
+                  x.vertiba,
+                  x.labakais,
+                  x.limenis)
 
     def PrintLoki(self):
         for x, y in self.loki:

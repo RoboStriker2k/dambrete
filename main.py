@@ -30,7 +30,27 @@ LZ = "LZ"  # Labais apakšējais/zemais
 # PYGame iestatijumi
 pygame.init()
 pygame.display.set_caption('Dambrete')
+screen = pygame.display.set_mode((width, height))
+laukums = pygame.Surface((height, height))  # W H
+kvadra = pygame.Surface((kvadrataizmers, kvadrataizmers))
+kvadra2 = pygame.Surface((kvadrataizmers, kvadrataizmers))  # W H
+panelis2 = pygame.Surface((width-height, height))
+
+font1 = pygame.font.Font(None, 50)
+font2 = pygame.font.Font(None, 25)
 clock = pygame.time.Clock()
+teksts = font1.render('Dambrete', False, 'black')
+teksts2 = font2.render('Speletaja Vertiba=', False, 'black')
+
+        # importe attelus un parveido to izmeru
+SP1att = pygame.image.load('atteli/speletajs1.png')
+SP2att = pygame.image.load('atteli/speletajs2.png')
+SP1datt = pygame.image.load('atteli/speletajs1dama.png')
+SP2datt = pygame.image.load('atteli/speletajs2dama.png')
+SP1att = pygame.transform.scale(SP1att, (kvadrataizmers, kvadrataizmers))
+SP2att = pygame.transform.scale(SP2att, (kvadrataizmers, kvadrataizmers))
+SP1datt = pygame.transform.scale( SP1datt, (kvadrataizmers, kvadrataizmers))
+SP2datt = pygame.transform.scale(SP2datt, (kvadrataizmers, kvadrataizmers))
 
 ArBotu = 1
 
@@ -66,11 +86,14 @@ def main():
     elif ArBotu==1:
         koks = SpelesKoks()  # speles koka funkcijas
         generetasVirsotnes = []  # koka virsotnes kas tiks glabatas šaja sarakstā
-        bots = Bots(spele, (0,  0,  0), koks, 3)
-        bots2 = Bots(spele, (255,  255, 255), koks, 3)
-      
+        
+        spele2=deepcopy(spele)
         while Running == True:
-            print(bots.minmax(2, spele, Melns))
+            
+            spele2=deepcopy(spele)
+            bots = Bots(spele2, (0,  0,  0), koks, 3)
+            bots2 = Bots(spele2, (255,  255, 255), koks, 3)
+            print(bots.minmax(2, spele2, Melns))
          
             grf.update(spele)
             pygame.display.update()
@@ -129,30 +152,9 @@ class Grafika:
     def __init__(self):
 
         clock.tick(10)
-        self.laukums = pygame.Surface((height, height))  # W H
-        self.kvadra = pygame.Surface((kvadrataizmers, kvadrataizmers))
-        self.kvadra2 = pygame.Surface((kvadrataizmers, kvadrataizmers))  # W H
 
-        self.panelis2 = pygame.Surface((width-height, height))
-        self.font1 = pygame.font.Font(None, 50)
-        self.font2 = pygame.font.Font(None, 25)
-        self.screen = pygame.display.set_mode((width, height))
-        self.teksts = self.font1.render('Dambrete', False, 'black')
-        self.teksts2 = self.font2.render('Speletaja Vertiba=', False, 'black')
+       
 
-        # importe attelus un parveido to izmeru
-        self.SP1att = pygame.image.load('atteli/speletajs1.png')
-        self.SP2att = pygame.image.load('atteli/speletajs2.png')
-        self.SP1datt = pygame.image.load('atteli/speletajs1dama.png')
-        self.SP2datt = pygame.image.load('atteli/speletajs2dama.png')
-        self.SP1att = pygame.transform.scale(
-            self.SP1att, (kvadrataizmers, kvadrataizmers))
-        self.SP2att = pygame.transform.scale(
-            self.SP2att, (kvadrataizmers, kvadrataizmers))
-        self.SP1datt = pygame.transform.scale(
-            self.SP1datt, (kvadrataizmers, kvadrataizmers))
-        self.SP2datt = pygame.transform.scale(
-            self.SP2datt, (kvadrataizmers, kvadrataizmers))
 
     # iekrāso kvadrātu laukumus
     def update(self, spe):
@@ -170,21 +172,21 @@ class Grafika:
             for y in range(SpelesLaukumaIzmers):
 
                 if (x % 2 != 0) and (y % 2 == 0):
-                    self.screen.blit(
-                        self.kvadra, (kvadrataizmers*x, kvadrataizmers*y))
+                    screen.blit(
+                        kvadra, (kvadrataizmers*x, kvadrataizmers*y))
                 elif (x % 2 == 0) and (y % 2 != 0):
-                    self.   screen.blit(
-                        self.  kvadra, (kvadrataizmers*x, kvadrataizmers*y))
+                     screen.blit(
+                         kvadra, (kvadrataizmers*x, kvadrataizmers*y))
 
     def grafika(self):
-        self.screen.blit(self.laukums, (0, 0))
-        self.screen.blit(self.panelis2, (600, 0))
-        self.laukums.fill(fonakrasa)
-        self.panelis2.fill(fons2krasa)
-        self.screen.blit(self.teksts, (600, 10))
-        self.screen.blit(self.teksts2, (600, 50))
-        self.kvadra.fill('white')
-        self.kvadra2.fill(iekrasots)
+        screen.blit(laukums, (0, 0))
+        screen.blit(panelis2, (600, 0))
+        laukums.fill(fonakrasa)
+        panelis2.fill(fons2krasa)
+        screen.blit(teksts, (600, 10))
+        screen.blit(teksts2, (600, 50))
+        kvadra.fill('white')
+        kvadra2.fill(iekrasots)
 
     def grafKaul(self, matrica):  # attelo kauliņus uz laukuma
         for x in range(SpelesLaukumaIzmers):
@@ -192,18 +194,18 @@ class Grafika:
                 if matrica[x][y].aiznemts != None:
                     if matrica[x][y].aiznemts.krasa == (255, 255, 255):
                         if not matrica[x][y].aiznemts.dama:
-                            self. screen.blit(
-                                self. SP1att, (kvadrataizmers*x, kvadrataizmers*y))
+                             screen.blit(
+                                 SP1att, (kvadrataizmers*x, kvadrataizmers*y))
                         else:
-                            self. screen.blit(
-                                self.SP1datt, (kvadrataizmers*x, kvadrataizmers*y))
+                             screen.blit(
+                                SP1datt, (kvadrataizmers*x, kvadrataizmers*y))
                     elif matrica[x][y].aiznemts.krasa == (0,  0,  0):
                         if not matrica[x][y].aiznemts.dama:
-                            self. screen.blit(
-                                self. SP2att, (kvadrataizmers*x, kvadrataizmers*y))
+                            screen.blit(
+                                 SP2att, (kvadrataizmers*x, kvadrataizmers*y))
                         else:
-                            self. screen.blit(
-                                self. SP2datt, (kvadrataizmers*x, kvadrataizmers*y))
+                             screen.blit(
+                                 SP2datt, (kvadrataizmers*x, kvadrataizmers*y))
                     else:
 
                         pass
@@ -211,16 +213,16 @@ class Grafika:
     def iekrasoAtzimeto(self, lauk, atzime):
         if lauk != None:
             for lauki1 in lauk:
-                self. screen.blit(
-                    self. kvadra2, (lauki1[0]*kvadrataizmers, lauki1[1]*kvadrataizmers))
+                 screen.blit(
+                     kvadra2, (lauki1[0]*kvadrataizmers, lauki1[1]*kvadrataizmers))
         if atzime != None:
-            self. screen.blit(
-                self. kvadra2, (atzime[0]*kvadrataizmers, atzime[1]*kvadrataizmers))
+            screen.blit(
+                kvadra2, (atzime[0]*kvadrataizmers, atzime[1]*kvadrataizmers))
 
     def attelovertibu(self, vertiba):
         vertiba = str(vertiba)
-        self.teksts3 = self.font2.render(vertiba, False, 'black')
-        self.screen.blit(self.teksts3, (780, 50))
+        teksts3 = font2.render(vertiba, False, 'black')
+        screen.blit(teksts3, (780, 50))
 
 ################################### speles gaitu saistitas funkcijas ######################
 

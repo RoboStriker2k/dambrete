@@ -17,7 +17,7 @@ height = 600  # loga augstums, izmatots gan lauku grafikai gan citas vietas
 width = height+200
 # speles iestatijumi
 # maina speles laukuma lielumu ( domats rindu un kolonu skaits)
-SpelesLaukumaIzmers = 7
+SpelesLaukumaIzmers = 8
 # Laukumu kvadrātu izmērs | lietots gan grafikai, gan saskarsmei.
 kvadrataizmers = height/SpelesLaukumaIzmers
 
@@ -61,15 +61,49 @@ def main():
                         spele = Spele()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_g:
                     spele.mainispeletaju()
-    # Speles galvenais cikls   Ar algoritma implementāciju
+    
+    
+    elif ArBotu==1:
+        koks = SpelesKoks()  # speles koka funkcijas
+        generetasVirsotnes = []  # koka virsotnes kas tiks glabatas šaja sarakstā
+        bots = Bots(spele, (0,  0,  0), koks, 3)
+        bots2 = Bots(spele, (255,  255, 255), koks, 3)
+      
+        while Running == True:
+            print(bots.minmax(2, spele, Melns))
+         
+            grf.update(spele)
+            pygame.display.update()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    Running = False
+                    sys.exit()
+                if event.type == MOUSEBUTTONDOWN:
+                 #   print(spele.Gajieni,spele.atlasits,"Pirms")
+                    spele.SpGajiens()
+                   # print(spele.Gajieni,spele.atlasits,"pec")
+
+                  #  print(spele.Gajieni,spele.atlasits,"Talak")
+                    pygame.display.update()
+                    if spele.beigas() == True:
+                        spele = Spele()
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_g:
+                    spele.mainispeletaju()
+    
+    
+    
+    
+    # Speles galvenais cikls   Ar algoritma implementāciju abiem speletajiem
     else:
         koks = SpelesKoks()  # speles koka funkcijas
         generetasVirsotnes = []  # koka virsotnes kas tiks glabatas šaja sarakstā
         bots = Bots(spele, (0,  0,  0), koks, 3)
         bots2 = Bots(spele, (255,  255, 255), koks, 3)
-        print(bots.minmax(3, spele, Melns))
-        print(bots2.minmax(3, spele, Balts))
+      
         while Running == True:
+            print(bots.minmax(2, spele, Melns))
+            print(bots2.minmax(2, spele, Balts))
             grf.update(spele)
             pygame.display.update()
             for event in pygame.event.get():
@@ -199,7 +233,9 @@ class Spele:
         self.speletajs = (255, 255, 255)  # tagadeja speletaja vertiba
         self.lekt = False  # vertiba ja var lekt pari
         self.Gajieni = []  # Atlauto gajienu matrica
-
+    def AtgrieztGaldaKopiju(self):
+        gald=deepcopy(self.galds)
+        return gald
     def mainispeletaju(self):
         if self.speletajs == (255, 255, 255):
             self.speletajs = (0, 0, 0)
@@ -323,6 +359,7 @@ class Galds:
     def lokacija(self, x, y):  # atgriez matricas elementu
         return self.matrica[x][y]
 
+        
     def relativitate(self, virziens, x, y):  # atgriez apkartejo laukumu kordināti
         match virziens:
             case "KZ":
@@ -541,12 +578,27 @@ class Bots:
 
     def VeiktGajienu(self, spele, PasPos, BeiguPos):
         if PasPos is None:
-            self.spele.BeigtGajienu()
-        if not self.spele.lekt:
+            spele.BeigtGajienu()
+        if not spele.lekt:
             laucin = spele.galds.lokacija(BeiguPos[0], BeiguPos[1])
             if laucin.aiznemts != None and laucin.aiznemts.krasa == self.speletajs.krasa:
-                pass
-
+                PasPos=BeiguPos
+            elif PasPos!=None and BeiguPos in spele.galds.atlautieGajieni (PasPos[0],PasPos[1]) :
+                spele.galds.kustiba(PasPos[0],PasPos[1],BeiguPos[0], BeiguPos[1])
+                if BeiguPos not in spele.galds.apkartejie(PasPos[0],PasPos[1]):
+                    spele.galds.NonemtKaulinu(PasPos[0]+(BeiguPos[0]-PasPos[0]),PasPos[1]+(BeiguPos[1]-PasPos[1]))
+                    spele.lekt==True
+                    PasPos=BeiguPos
+                    BeiguPos=spele.galds.atlautieGajieni (PasPos[0],PasPos[1])
+                    if BeiguPos!=[]:
+                        self.VeiktGajienu(spele,PasPos,BeiguPos)
+                        spele.BeigtGajienu()
+        if self.spele.lekt:
+            if PasPos!=None and BeiguPos in spele.galds.atlautieGajieni (PasPos[0],PasPos[1],spele.lekt) :
+               spele.galds.kustiba(PasPos[0],PasPos[1],BeiguPos[0], BeiguPos[1])        
+               spele.galds.NonemtKaulinu(PasPos[0]+(BeiguPos[0]-PasPos[0]),PasPos[1]+(BeiguPos[1]-PasPos[1]))       
+            if  spele.galds.atlautieGajieni (PasPos[0],PasPos[1],spele.lekt)==[]:
+                spele.BeigtGajienu()
     def GajienaIegusana(self, spele):
         for x in range(SpelesLaukumaIzmers):
             for y in range(SpelesLaukumaIzmers):

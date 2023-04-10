@@ -3,7 +3,6 @@ import sys
 from pygame.locals import *
 import math
 from copy import deepcopy  # galda kopešana
-import random as random
 import time 
 # speletaju krasas
 #       R     G   B

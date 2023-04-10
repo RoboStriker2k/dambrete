@@ -150,7 +150,7 @@ def main():
                     vertiba = bots.VertejumsGalda(spele)
             else:
                     bots2 = Bots(spele2, (255,  255, 255), 8)
-                    bots.gajiens(spele)
+                    bots2.gajiens(spele)
                     vertiba = bots2.VertejumsGalda(spele)
             time.sleep(0.1)
             grf.update(spele)

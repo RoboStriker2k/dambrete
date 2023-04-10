@@ -768,14 +768,12 @@ class Bots:
                         if aiznemts.krasa == self.krasa and y < 4:
                             Vert += 5
                         if aiznemts.krasa != self.krasa and y < 4:
-                            Vert -= 7
+                            Vert -= 5
                         if aiznemts.krasa == self.krasa and y >= 4:
-                            Vert += 11
+                            Vert += 5
                         if aiznemts.krasa != self.krasa and y >= 4:
-                            Vert -= 7
-                        
+                            Vert -= 5          
         else:
-
             for x in range(SpelesLaukumaIzmers):
                 for y in range(SpelesLaukumaIzmers):
                     aiznemts = galds.lokacija(x, y).aiznemts
@@ -784,10 +782,10 @@ class Bots:
                             Vert += 13
                         if aiznemts.krasa != self.krasa and aiznemts.dama:
                             Vert -= 13
-                        if aiznemts.krasa == self.krasa and y >= SpelesLaukumaIzmers-3 and aiznemts.dama:    
-                            Vert -= 5
-                        if aiznemts.krasa != self.krasa and y >= SpelesLaukumaIzmers-3 and aiznemts.dama:    
-                            Vert += 5    
+                        if aiznemts.krasa == self.krasa and y <= SpelesLaukumaIzmers-3 and aiznemts.dama:    
+                            Vert += 5
+                        if aiznemts.krasa != self.krasa and y <= SpelesLaukumaIzmers-3 and aiznemts.dama:    
+                            Vert -= 5    
                         if aiznemts.krasa == self.krasa and y >= SpelesLaukumaIzmers-3 :    
                             Vert += 3
                         if aiznemts.krasa != self.krasa and y >= SpelesLaukumaIzmers-3 :
@@ -795,11 +793,11 @@ class Bots:
                         if aiznemts.krasa == self.krasa and y < 4:
                             Vert += 5
                         if aiznemts.krasa != self.krasa and y < 4:
-                            Vert -= 7
+                            Vert -= 5
                         if aiznemts.krasa == self.krasa and y >= 4:
-                            Vert += 11
+                            Vert += 5
                         if aiznemts.krasa != self.krasa and y >= 4:
-                            Vert -= 7
+                            Vert -= 5
         return Vert
 
 

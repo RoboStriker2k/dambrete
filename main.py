@@ -146,11 +146,11 @@ def main():
             spele2 = deepcopy(spele)
             if spele.speletajs == Melns:
                     bots = Bots(spele2, (0,  0,  0), 8)
-                    bots.minmax(2, spele, Melns)
+                    bots.gajiens(spele)
                     vertiba = bots.VertejumsGalda(spele)
             else:
                     bots2 = Bots(spele2, (255,  255, 255), 8)
-                    bots2.minmax(2, spele, Balts)
+                    bots.gajiens(spele)
                     vertiba = bots2.VertejumsGalda(spele)
             time.sleep(0.1)
             grf.update(spele)
@@ -190,7 +190,7 @@ class Grafika:
 
     # iekrāso kvadrātu laukumus
 
-    def update(self, spe):
+    def update(self, spe):# funkcija prieks laukumu krasojumu izsaukšanas
         self.grafika()
         self.krasojums()
 
@@ -199,7 +199,7 @@ class Grafika:
                 spe.atlasits[0], spe.atlasits[1]), spe.atlasits)
         self.grafKaul(spe.galds.matrica)
 
-    def krasojums(self):
+    def krasojums(self):    #Iekrāso krāsainos laukus uz speles laukuma
         for x in range(SpelesLaukumaIzmers):
             for y in range(SpelesLaukumaIzmers):
 
@@ -210,7 +210,7 @@ class Grafika:
                     screen.blit(
                         kvadra, (kvadrataizmers*x, kvadrataizmers*y))
 
-    def grafika(self):
+    def grafika(self): #lielākā daļa no krasojamiem objektiem uz pygame loga
         screen.blit(laukums, (0, 0))
         screen.blit(panelis2, (600, 0))
         laukums.fill(fonakrasa)
@@ -225,7 +225,7 @@ class Grafika:
         screen.blit(teksts7, (600, 300))
         screen.blit(teksts8, (600, 350))
 
-    def grafKaul(self, matrica):  # attelo kauliņus uz laukuma
+    def grafKaul(self, matrica):  # attelo kauliņus uz laukuma izzejot cauri matricas elementiem, ja atrod tad iezīmē
         for x in range(SpelesLaukumaIzmers):
             for y in range(SpelesLaukumaIzmers):
                 if matrica[x][y].aiznemts != None:
@@ -247,7 +247,7 @@ class Grafika:
 
                         pass
 
-    def iekrasoAtzimeto(self, lauk, atzime):
+    def iekrasoAtzimeto(self, lauk, atzime): #iekrāso atlasīto lauku un laukus kuri ir pieejami ka nakamie gajieni
         if lauk != None:
             for lauki1 in lauk:
                 screen.blit(
@@ -256,7 +256,7 @@ class Grafika:
             screen.blit(
                 kvadra2, (atzime[0]*kvadrataizmers, atzime[1]*kvadrataizmers))
 
-    def attelovertibu(self, vertiba):
+    def attelovertibu(self, vertiba): #Attēlo vērtibu pie Speletāja veriba uzraksta
         vertiba = str(vertiba)
         teksts3 = font2.render(vertiba, False, 'black')
         screen.blit(teksts3, (760, 50))

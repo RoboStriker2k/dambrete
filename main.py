@@ -3,7 +3,7 @@ import sys
 from pygame.locals import *
 import math
 from copy import deepcopy  # galda kopešana
-
+import random as random
 # speletaju krasas
 #       R     G   B
 Balts = (255, 255, 255)
@@ -57,7 +57,7 @@ SP2att = pygame.transform.scale(SP2att, (kvadrataizmers, kvadrataizmers))
 SP1datt = pygame.transform.scale(SP1datt, (kvadrataizmers, kvadrataizmers))
 SP2datt = pygame.transform.scale(SP2datt, (kvadrataizmers, kvadrataizmers))
 ##########################################################################
-# mainigais ar kuru kontrole cik botu # 0 - nav # 1 - viens # 2 -divi
+
 
 
 def DecodeBotaReturn(teksts):
@@ -73,7 +73,7 @@ def main():
     Running = True  # Mainigais ar kuru vares partraukt programams darbibu patraucot while loop
     spele = Spele()  # inicializeta kalse spele kura tiks izmantota speles darbibas  gaita
     grf = spele.gr  # ar grafiku saistita apstrade kura izsauc speles izsaukto grafikas klasi
-    ArBotu = 1
+    ArBotu = 0 # mainigais ar kuru kontrole cik botu # 0 - nav # 1 - viens # 2 -divi
     koks = SpelesKoks()  # speles koka funkcijas
       # koka virsotnes kas tiks glabatas šaja sarakstā
     while Running == True:
@@ -647,7 +647,9 @@ class Bots:
                             vertiba=math.inf
                         else:
                             h=self.minmax(dzilums-1,spele,'max')
+                            print(len (h),'garums')
                             _,_, vertiba=h
+                            
                             print(h)
                         if vertiba is None:
                             continue  
@@ -670,6 +672,7 @@ class Bots:
     def VeiktGajienu(self, spele, PasPos, BeiguPos):
         if PasPos is None:
             spele.BeigtGajienu()
+            return
         if not spele.lekt:
             laucin = spele.galds.lokacija(BeiguPos[0], BeiguPos[1])
             if laucin.aiznemts != None and laucin.aiznemts.krasa == self.krasa:

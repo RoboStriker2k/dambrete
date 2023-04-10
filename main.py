@@ -4,6 +4,7 @@ from pygame.locals import *
 import math
 from copy import deepcopy  # galda kopešana
 import random as random
+import time 
 # speletaju krasas
 #       R     G   B
 Balts = (255, 255, 255)
@@ -74,13 +75,9 @@ def main():
     spele = Spele()  # inicializeta kalse spele kura tiks izmantota speles darbibas  gaita
     grf = spele.gr  # ar grafiku saistita apstrade kura izsauc speles izsaukto grafikas klasi
     ArBotu = 0 # mainigais ar kuru kontrole cik botu # 0 - nav # 1 - viens # 2 -divi
-    koks = SpelesKoks()  # speles koka funkcijas
-      # koka virsotnes kas tiks glabatas šaja sarakstā
     while Running == True:
-        
         if ArBotu == 0:
            # Speles galvenais cikls Bez Algoritma, diviem speletajiem katram nemot gajienu
-
             grf.update(spele)
             pygame.display.update()
             for event in pygame.event.get():
@@ -95,37 +92,23 @@ def main():
                         spele = Spele()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_g:
                     spele.mainispeletaju()
-                    
-                
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_h:
                         spele.galds.__init__()
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_z:
-                        koks.PrintVirsotnes()
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_c:
-                        koks.PrintLoki() 
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_0:
                         ArBotu=0
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_1:
                         ArBotu=1
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_2:
                         ArBotu=2              
-
         elif ArBotu == 1:
             vertiba = 0
             spele2 = deepcopy(spele)
-            bots = Bots(spele, (0,  0,  0), koks, 6)
-            if spele.speletajs == Balts:
-                    
+            bots = Bots(spele2, (0,  0,  0), 8)
+            if spele.speletajs == Balts:     
                     bots.gajiens(spele)
                     vertiba = bots.VertejumsGalda(spele)
                     spele.speletajs=Melns
-                # ve = DecodeBotaReturn((bots.minmax(2, spele, Melns)))
-                 #  virs = Virsotne(ve[0], ve[1], ve[2], ve[3], 0)
-            #   ve2 = DecodeBotaReturn((bots2.minmax(2, spele,Balts)))
-                 #  koks.PievienoVirsotni(virs)
-                 #  generetasVirsotnes.append(virs)
-                #   koks.PrintVirsotnes()
-            
+            time.sleep(0.1)
             grf.update(spele)
             grf.attelovertibu(vertiba)
             pygame.display.update()
@@ -148,11 +131,7 @@ def main():
                         spele.mainispeletaju()
                     
                     if event.type == pygame.KEYDOWN and event.key == pygame.K_h:
-                        spele.galds.__init__()
-                    if event.type == pygame.KEYDOWN and event.key == pygame.K_z:
-                        koks.PrintVirsotnes()
-                    if event.type == pygame.KEYDOWN and event.key == pygame.K_c:
-                        koks.PrintLoki()                
+                        spele.galds.__init__()            
                     if event.type == pygame.KEYDOWN and event.key == pygame.K_0:
                         ArBotu=0
                     if event.type == pygame.KEYDOWN and event.key == pygame.K_1:
@@ -166,20 +145,14 @@ def main():
             vertiba = 0
             spele2 = deepcopy(spele)
             if spele.speletajs == Melns:
-                    bots = Bots(spele2, (0,  0,  0), koks, 3)
+                    bots = Bots(spele2, (0,  0,  0), 8)
                     bots.minmax(2, spele, Melns)
                     vertiba = bots.VertejumsGalda(spele)
             else:
-                    bots2 = Bots(spele2, (255,  255, 255), koks, 3)
+                    bots2 = Bots(spele2, (255,  255, 255), 8)
                     bots2.minmax(2, spele, Balts)
                     vertiba = bots2.VertejumsGalda(spele)
-                # ve = DecodeBotaReturn((bots.minmax(2, spele, Melns)))
-                 #  virs = Virsotne(ve[0], ve[1], ve[2], ve[3], 0)
-            #   ve2 = DecodeBotaReturn((bots2.minmax(2, spele,Balts)))
-                 #  koks.PievienoVirsotni(virs)
-                 #  generetasVirsotnes.append(virs)
-                #   koks.PrintVirsotnes()
-
+            time.sleep(0.1)
             grf.update(spele)
             grf.attelovertibu(vertiba)
             pygame.display.update()
@@ -202,10 +175,6 @@ def main():
 
                     if event.type == pygame.KEYDOWN and event.key == pygame.K_h:
                         spele.galds.__init__()
-                    if event.type == pygame.KEYDOWN and event.key == pygame.K_z:
-                        koks.PrintVirsotnes()
-                    if event.type == pygame.KEYDOWN and event.key == pygame.K_c:
-                        koks.PrintLoki()      
                     if event.type == pygame.KEYDOWN and event.key == pygame.K_0:
                         ArBotu=0
                     if event.type == pygame.KEYDOWN and event.key == pygame.K_1:
@@ -515,7 +484,7 @@ class laucins:
 ########################################## Bota funkcijas #########################################
 # To be added
 class Bots:
-    def __init__(self, spele, krasa, koks, dzilums=1):
+    def __init__(self, spele, krasa, dzilums=1):
         self.dzilums = dzilums
         self.spele = spele
         self.krasa = krasa
@@ -525,7 +494,6 @@ class Bots:
             self.pretineika = (0, 0, 0)
         else:
             self.pretineika = (255, 255, 255)
-        self.koks = koks
         self.parbaudamias = None
     
             
@@ -535,9 +503,11 @@ class Bots:
             print('Iestrega Ar Visam damam') 
         self.minimaxGajiens(spele)       
     def minimaxGajiens(self,spele):
-        huh=self.minmax(self.dzilums-1,spele,'max')
-        print (huh)
+        spele2 = deepcopy(spele)
+        huh=self.minmax(self.dzilums,spele2,'max')
+        #print (huh)
         LabakaPos,  LabakaisGajiens,vertiba= huh
+        
         self.VeiktGajienu(spele,LabakaPos,LabakaisGajiens)
         return
     def minmax(self, dzilums, spele, Speletajs):
@@ -547,7 +517,7 @@ class Bots:
                 vertiba = -math.inf
                 LabakaPos = None
                 LabakaisGajiens = None
-                Iespejamie_Gajieni = self.GajienaIegusana(spele)
+                Iespejamie_Gajieni = self.GajienuIegusana(spele)
                 for gajieni in Iespejamie_Gajieni:
                     #  print(gajieni)
                     for lauks in gajieni[2]:
@@ -567,13 +537,13 @@ class Bots:
                         if (gajienavertiba == -math.inf and LabakaPos is None):
                             LabakaPos = (gajieni[0], gajieni[1])
                             LabakaisGajiens = (lauks[0], lauks[1])
-                    print('max dzilums ---',LabakaPos,  LabakaisGajiens, vertiba)
+                    print('max  ---',LabakaPos,  LabakaisGajiens, vertiba,'    Dzilums==',dzilums)
                     return LabakaPos,  LabakaisGajiens, vertiba
             else:
                 vertiba = math.inf
                 LabakaPos = None
                 LabakaisGajiens = None
-                Iespejamie_Gajieni = self.GajienaIegusana(spele)
+                Iespejamie_Gajieni = self.GajienuIegusana(spele)
                 for gajieni in Iespejamie_Gajieni:
                     #  print(gajieni)
                     for lauks in gajieni[2]:
@@ -593,14 +563,14 @@ class Bots:
                         if (gajienavertiba == -math.inf and LabakaPos is None):
                             LabakaPos = (gajieni[0], gajieni[1])
                             LabakaisGajiens = (lauks[0], lauks[1])
-                    print('min dzilums ---',LabakaPos,  LabakaisGajiens, vertiba)        
+                    print('min ---',LabakaPos,  LabakaisGajiens, vertiba,'    Dzilums==',dzilums)        
                     return LabakaPos,  LabakaisGajiens, vertiba
         else:
             if Speletajs == 'max':
                 vertiba = -math.inf
                 LabakaPos = None
                 LabakaisGajiens = None
-                Iespejamie_Gajieni = self.GajienaIegusana(spele)
+                Iespejamie_Gajieni = self.GajienuIegusana(spele)
                 for gajieni in Iespejamie_Gajieni:
                     #  print(gajieni)
                     for lauks in gajieni[2]:
@@ -612,9 +582,11 @@ class Bots:
                         if spele.beigas():
                             vertiba=math.inf
                         else:
-                            _,_, vertiba=self.minmax(dzilums-1,spele,'min')
-                        if vertiba is None:
-                            continue    
+                            h=self.minmax(dzilums-1,spele,'min')
+                            if h is not None:
+                                _,_, vertiba=h
+                      #  if vertiba is None:
+                      #      continue    
                         self.krasa, self.pretineika = self.pretineika, self.krasa
                         spele.speletajs = self.krasa
                         if gajienavertiba > vertiba:
@@ -628,13 +600,13 @@ class Bots:
                         if (gajienavertiba == -math.inf and LabakaPos is None):
                             LabakaPos = (gajieni[0], gajieni[1])
                             LabakaisGajiens = (lauks[0], lauks[1])
-                    print('max  ---',LabakaPos,  LabakaisGajiens, vertiba)
+                    print('max  ---',LabakaPos,  LabakaisGajiens, vertiba,'    Dzilums==',dzilums)
                     return LabakaPos,  LabakaisGajiens, vertiba
             else:
                 vertiba = math.inf
                 LabakaPos = None
                 LabakaisGajiens = None
-                Iespejamie_Gajieni = self.GajienaIegusana(spele)
+                Iespejamie_Gajieni = self.GajienuIegusana(spele)
                 for gajieni in Iespejamie_Gajieni:
                     #  print(gajieni)
                     for lauks in gajieni[2]:
@@ -647,12 +619,15 @@ class Bots:
                             vertiba=math.inf
                         else:
                             h=self.minmax(dzilums-1,spele,'max')
-                            print(len (h),'garums')
-                            _,_, vertiba=h
                             
-                            print(h)
-                        if vertiba is None:
-                            continue  
+                       
+                            if h is not None:
+                                _,_, vertiba=h
+                            
+                            
+                            #print(h)
+                       # if vertiba is None:
+                        #    continue  
                         self.krasa, self.pretineika = self.pretineika, self.krasa
                         spele.speletajs = self.krasa
                         if gajienavertiba < vertiba:
@@ -666,7 +641,7 @@ class Bots:
                         if (gajienavertiba == -math.inf and LabakaPos is None):
                             LabakaPos = (gajieni[0], gajieni[1])
                             LabakaisGajiens = (lauks[0], lauks[1])
-                    print('min ---',LabakaPos,  LabakaisGajiens, vertiba)
+                    print('min ---',LabakaPos,  LabakaisGajiens, vertiba,'    Dzilums==',dzilums)
                     return LabakaPos,  LabakaisGajiens, vertiba
 
     def VeiktGajienu(self, spele, PasPos, BeiguPos):
@@ -707,7 +682,7 @@ class Bots:
         if spele.lekt != True:
             spele.speletajs = self.pretineika
 
-    def GajienaIegusana(self, spele):
+    def GajienuIegusana(self, spele):
         for x in range(SpelesLaukumaIzmers):
             for y in range(SpelesLaukumaIzmers):
                 if spele.galds.atlautieGajieni(x, y, self.spele.lekt) != [] and spele.galds.lokacija(x, y).aiznemts != None and spele.galds.lokacija(x, y).aiznemts .krasa == self.spele.speletajs:
@@ -717,9 +692,8 @@ class Bots:
         IespGa = []
         for x in range(SpelesLaukumaIzmers):
             for y in range(SpelesLaukumaIzmers):
-                if spele.galds.atlautieGajieni(self, x, y, self.spele.lekt) != [] and spele.galds.aiznemts != None and spele.galds.aiznemts.krasa == self.spele.speletajs:
-                    IespGa.append(x, y, spele.galds.atlautieGajieni(
-                        self, x, y, self.spele.lekt))
+                if spele.galds.atlautieGajieni(x, y, self.spele.lekt) != [] and spele.galds.lokacija(x, y).aiznemts != None and spele.galds.lokacija(x, y).aiznemts.krasa == self.spele.speletajs:
+                    IespGa.append((x, y, spele.galds.atlautieGajieni(x, y, self.spele.lekt)))
         return IespGa
 
     def KaulinuDaudzums(self, spele):
@@ -763,17 +737,22 @@ class Bots:
                     aiznemts = galds.lokacija(x, y).aiznemts
                     if aiznemts != None:
                         if aiznemts.krasa == self.krasa and aiznemts.dama:
-                            Vert += 20
+                            Vert += 13
                         if aiznemts.krasa != self.krasa and aiznemts.dama:
-                            Vert -= 20
+                            Vert -= 13
+                        if aiznemts.krasa == self.krasa and y >= SpelesLaukumaIzmers-3 and aiznemts.dama:    
+                            Vert -= 5
+                        if aiznemts.krasa != self.krasa and y >= SpelesLaukumaIzmers-3 and aiznemts.dama:    
+                            Vert += 5
                         if aiznemts.krasa == self.krasa and y < 4:
-                            Vert += 12
+                            Vert += 5
                         if aiznemts.krasa != self.krasa and y < 4:
                             Vert -= 7
                         if aiznemts.krasa == self.krasa and y >= 4:
-                            Vert += 12
+                            Vert += 11
                         if aiznemts.krasa != self.krasa and y >= 4:
                             Vert -= 7
+                        
         else:
 
             for x in range(SpelesLaukumaIzmers):
@@ -781,62 +760,24 @@ class Bots:
                     aiznemts = galds.lokacija(x, y).aiznemts
                     if aiznemts != None:
                         if aiznemts.krasa == self.krasa and aiznemts.dama:
-                            Vert += 20
+                            Vert += 13
                         if aiznemts.krasa != self.krasa and aiznemts.dama:
-                            Vert -= 20
+                            Vert -= 13
+                        if aiznemts.krasa == self.krasa and y >= SpelesLaukumaIzmers-3 and aiznemts.dama:    
+                            Vert -= 5
+                        if aiznemts.krasa != self.krasa and y >= SpelesLaukumaIzmers-3 and aiznemts.dama:    
+                            Vert += 5    
+                            
                         if aiznemts.krasa == self.krasa and y < 4:
-                            Vert += 12
+                            Vert += 5
                         if aiznemts.krasa != self.krasa and y < 4:
                             Vert -= 7
                         if aiznemts.krasa == self.krasa and y >= 4:
-                            Vert += 12
+                            Vert += 11
                         if aiznemts.krasa != self.krasa and y >= 4:
                             Vert -= 7
         return Vert
-####################### speles koka virsotne #########
 
-
-class Virsotne:
-    def __init__(self, gajiens, gajieni, labakais, vertiba, limenis):
-        self.gajiens = gajiens
-        self.gajieni = gajieni
-        self.vertiba = vertiba
-        self.labakais = labakais
-        self.limenis = limenis
-##################### Speles koks ##################
-
-
-class SpelesKoks:
-    def __init__(self):
-        self.virstones = []
-        self.loki = dict()
-
-    def PievienoVirsotni(self, Virsotne):
-        self.virstones.append(Virsotne)
-
-    def PievienoLoku(self, svirsotne, bvirsotne):
-        self.loki[svirsotne] = self.loki.get(svirsotne, [])+[bvirsotne]
-
-    def GetVirsotne(self, Virsotne):
-        saraksts = self.virstones.copy()
-        for lieta in saraksts:
-            if lieta.id == Virsotne.id:
-                return lieta
-
-    def GetLoki(self, svirstone):
-        return self.loki[svirstone]
-
-    def PrintVirsotnes(self):
-        for x in self.virstones:
-            print(x.gajiens,
-                  x.gajieni,
-                  x.vertiba,
-                  x.labakais,
-                  x.limenis)
-
-    def PrintLoki(self):
-        for x, y in self.loki:
-            print(x, y)
 
 
 ######################################## INICIALIZE MAIN FUNKCIJU #################################################

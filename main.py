@@ -16,7 +16,7 @@ iekrasots = (69, 69, 69)
 height = 600  # loga augstums, izmatots gan lauku grafikai gan citas vietas
 width = height+200
 # speles iestatijumi
-# maina speles laukuma lielumu ( domats rindu un kolonu skaits)
+# maina speles laukuma lielumu ( domats rindu un kolonu skaits) # min 7 
 SpelesLaukumaIzmers = 8
 # Laukumu kvadrātu izmērs | lietots gan grafikai, gan saskarsmei.
 kvadrataizmers = height/SpelesLaukumaIzmers
@@ -275,19 +275,23 @@ class Spele:
         self.Gajieni = []  # Atlauto gajienu matrica
 
     def AtgrieztGaldaKopiju(self):
+        #neizmantota funkcija galda kopešanai
         gald = deepcopy(self.galds)
         return gald
 
     def mainispeletaju(self):
+        #funkcija ar kuru izmantojot g pogu iespejams mainīt spēlētāja pusi pašam 
         if self.speletajs == (255, 255, 255):
             self.speletajs = (0, 0, 0)
         else:
             self.speletajs = (255, 255, 255)
 
-    def lauks(self, x, y):   # funkcija atgriez laucinu uzkura atrodas pele
+    def lauks(self, x, y):   # funkcija atgriez laucinu uzkura atrodas pele 
+        #tas ir x pixel / kvadrāta izmers  piezemināts pie vesela skaitļa 
         return (x//kvadrataizmers, y//kvadrataizmers)
 
     def SpGajiens(self):
+        #funkcija spēlētāja gājienam.
         Pele_pos = tuple(map(int, pygame.mouse.get_pos()))
       #  print(Pele_pos,"peles kordinates") #debug teksts prieks peles pozicijas noteiksanas
         self.peles_pos = tuple(map(int, self.lauks(Pele_pos[0], Pele_pos[1])))
@@ -323,6 +327,7 @@ class Spele:
                 self.atlasits = self.peles_pos
 
     def BeigtGajienu(self):
+        #Funkcija gajiena beigšanai, speletāja nomaiņai
         if self.speletajs == (255, 255, 255):
             self.speletajs = (0, 0, 0)
         else:
@@ -333,6 +338,7 @@ class Spele:
         self.lekt = False
 
     def beigas(self):
+        #veic parbaudi vai viena no pusēm ir bez kauliņiem
         skaitsW = 0
         skaitsB = 0
         flagW = False
@@ -363,7 +369,7 @@ class Galds:
         self.matrica = self.jaunaSpele()
 
     def jaunaSpele(self):
-        # izveido jaunu laukumu
+        # izveido jaunu laukumu Spelei
         matrica = [
             [None]*SpelesLaukumaIzmers for i in range(SpelesLaukumaIzmers)]
         for x in range(SpelesLaukumaIzmers):  # azipilda to ar lauciņiem
@@ -385,7 +391,7 @@ class Galds:
 
         return matrica
 
-    def lokacija(self, x, y):  # atgriez matricas elementu
+    def lokacija(self, x, y):  # atgriez matricas elementu #parasti tas ir kaulina objekts vai None
         return self.matrica[x][y]
 
     def relativitate(self, virziens, x, y):  # atgriez apkartejo laukumu kordināti
@@ -401,10 +407,10 @@ class Galds:
             case _:
                 return 0
 
-    def apkartejie(self, x, y):  # atgriez apkartejos laucinuss
+    def apkartejie(self, x, y):  # atgriez apkartejos laucinuss pa diogonāli
         return [self.relativitate(KA, x, y), self.relativitate(LA, x, y), self.relativitate(KZ, x, y), self.relativitate(LZ, x, y)]
 
-    def vienkarsakustiba(self, x, y):  # atgriez visus gajienus kaulinam
+    def vienkarsakustiba(self, x, y):  # atgriez visus gajienus kaulinam, kas atļauti
         if self.matrica[x][y].aiznemts != None:
             if self.matrica[x][y].aiznemts.dama == False and self.matrica[x][y].aiznemts.krasa == (255, 255, 255):
                 gajiens = [self.relativitate(
@@ -430,7 +436,7 @@ class Galds:
     def NonemtKaulinu(self, x, y):  # Aizvieto kaulinu at tukšu vietu.
         self.matrica[x][y].aiznemts = None
 
-    def kustiba(self, x0, y0, x1, y1):  # Veic Kustību
+    def kustiba(self, x0, y0, x1, y1):  # Veic Kustību Uz speles galda
         m = self.matrica
         m[x1][y1].aiznemts = m[x0][y0].aiznemts
         self.NonemtKaulinu(x0, y0)
@@ -458,54 +464,56 @@ class Galds:
         return AG
 
     def kronet(self, x, y):
+        #funkcija padara kaulinu par dāmu 
         if self.matrica[x][y].aiznemts != None:
             if (self.matrica[x][y].aiznemts.krasa == (255, 255, 255) and y == 0) or (self.matrica[x][y].aiznemts.krasa == (0, 0, 0) and y == SpelesLaukumaIzmers-1):
-                self.matrica[x][y].aiznemts.damas()
+                self.matrica[x][y].aiznemts.damas() 
 
 ######################################## Kaulina definicija ############################################
 
 
 class kaulins:
     def __init__(self, krasa, dama=False):
-        self.krasa = krasa
-        self.dama = dama
-        self.vertiba=1
-    def damas(self):
-        self.dama = True
-        self.vertiba=2
+        self.krasa = krasa #vertiba ar kuru atspogulo kaulina krasu 
+        self.dama = dama #vertiba ar kuru atspogulo vai ir dama
+        self.vertiba=1 #neizmantota vertiba jo neizmanto kaulvertibas funkciju
+    def damas(self): #funkcija ar kuru maina vertibu kauliņam
+        self.dama = True #vertiba ar kuru atspogulo vai ir dama
+        self.vertiba=2 #neizmantota vertiba jo neizmanto kaulvertibas funkciju
 ######################################### Laucina definicija  ##########################################
 
 
 class laucins:
     def __init__(self, krasa, aiznemts=None):
-        self.krasa = krasa
-        self.aiznemts = aiznemts
+        self.krasa = krasa         #krasa laucinam BALTA VAI MELNA
+        self.aiznemts = aiznemts    #VAI LAUCINS AIZNEMTS JA AIZNEMTS TAD AR KAULINA KLASES OBJEKTU
 
 
 ########################################## Bota funkcijas #########################################
 # To be added
 class Bots:
     def __init__(self, spele, krasa, dzilums=1):
-        self.dzilums = dzilums
-        self.spele = spele
-        self.krasa = krasa
-        self.pretineika = krasa
-        self.parbaudamakrasa = krasa
+        self.dzilums = dzilums #saglabā dziluma vertibu lidz kura tiek apskatīti gajieni
+        self.spele = spele  #speles mainigais kuru parsti tapat nododu ka parametru funkcijai , Lieks
+        self.krasa = krasa  #Datora speletaja krasa
+        self.pretineika = krasa #Pretinieka speletaja krasa
+        self.parbaudamakrasa = krasa #Datora speletaja krasa lieka, gandriz neizmantoju
         if self.krasa == (255, 255, 255):
             self.pretineika = (0, 0, 0)
         else:
             self.pretineika = (255, 255, 255)
             
-    def gajiens(self,spele):
+    def gajiens(self,spele): #funckijas kas izsauc minmax gajiena funkciju
         if self.VaiVelIrParastie==False:
             print('Iestrega Ar Visam damam') 
-            spele.galds.jaunaspele()
+            return False  
         if self.minimaxGajiens(spele):
             return True
         else: return False       
     def minimaxGajiens(self,spele):
-        spele2 = deepcopy(spele)
-        huh=self.minmax(self.dzilums,spele2,'max')
+        #funkcija kas izmantota minmax algoritma izsaukšānai un gajiena veikšanai
+        spele2 = deepcopy(spele) #izveido spēles mainigajam pilnīgu kopiju
+        huh=self.minmax(self.dzilums,spele2,'max') 
         #print (huh)
         if huh is None:
             return False
@@ -514,6 +522,7 @@ class Bots:
         self.VeiktGajienu(spele,LabakaPos,LabakaisGajiens)
         return True
     def minmax(self, dzilums, spele, Speletajs):
+        #funkcija kas veido minmax algoritmu
         # zem speletājs domāts min or max gajiens
         if dzilums <= 0:
             if Speletajs == 'max':
@@ -648,6 +657,7 @@ class Bots:
                     return LabakaPos,  LabakaisGajiens, vertiba
 
     def VeiktGajienu(self, spele, PasPos, BeiguPos):
+        #funkcija kas veic gājienu uz speles galda saistiba ar datora gajieniem
         if PasPos is None:
             spele.BeigtGajienu()
             return
@@ -686,12 +696,15 @@ class Bots:
             spele.speletajs = self.pretineika
 
     def GajienuIegusana(self, spele):
+        #funkcija kas izmantota datora gajienu iegušanai
         for x in range(SpelesLaukumaIzmers):
             for y in range(SpelesLaukumaIzmers):
                 if spele.galds.atlautieGajieni(x, y, self.spele.lekt) != [] and spele.galds.lokacija(x, y).aiznemts != None and spele.galds.lokacija(x, y).aiznemts .krasa == self.spele.speletajs:
                     yield (x, y, spele.galds.atlautieGajieni(x, y, self.spele.lekt))
 
-    def VisuGajienuIegusana(self, spele):
+    def VisuGajienuIegusana(self, spele): 
+        #neizmantota funkcija, bet var aizvietot GajienuIegusana funkciju
+        # jo ta tiik atgriez vienu gajienu kamer šī atgriež vairākus uz reiz
         IespGa = []
         for x in range(SpelesLaukumaIzmers):
             for y in range(SpelesLaukumaIzmers):
@@ -699,7 +712,7 @@ class Bots:
                     IespGa.append((x, y, spele.galds.atlautieGajieni(x, y, self.spele.lekt)))
         return IespGa
 
-    def KaulinuDaudzums(self, spele):
+    def KaulinuDaudzums(self, spele): #neizmantota funkcija kaulinu daudzuma apreikinasanai
         Kaul = 0
         for x in range(SpelesLaukumaIzmers):
             for y in range(SpelesLaukumaIzmers):
@@ -708,7 +721,8 @@ class Bots:
                     Kaul += 1
         return Kaul
 
-    def VaiVelIrParastie(self, spele):
+    def VaiVelIrParastie(self, spele): #funkcija izmantota lai noteiktu vai uzgalda ir parastie kaulini
+        #tas ir vai nav visas damas
         galds = spele.galds
         for x in range(SpelesLaukumaIzmers):
             for y in range(SpelesLaukumaIzmers):
@@ -717,7 +731,7 @@ class Bots:
                     return True
         return False
 
-    def KaulVert(self, spele):
+    def KaulVert(self, spele): #neizmantota vertesanas funkcija 
         skaits = 0
         for x in range(SpelesLaukumaIzmers):
             for y in range(SpelesLaukumaIzmers):
@@ -731,7 +745,7 @@ class Bots:
                             skaits -= sp.aiznemts.vertiba
         return skaits
 
-    def VertejumsGalda(self, spele):
+    def VertejumsGalda(self, spele): #funkcu vertibuija kas verte visa galda esošu kauliņ
         Vert = 0
         galds = spele.galds
         if self.krasa == (255, 255, 255):

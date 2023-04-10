@@ -145,14 +145,16 @@ def main():
             vertiba = 0
             spele2 = deepcopy(spele)
             if spele.speletajs == Melns:
-                    bots = Bots(spele2, (0,  0,  0), 8)
-                    bots.gajiens(spele)
+                    bots = Bots(spele2, (0,  0,  0), 3)
+                    if not bots.gajiens(spele):
+                        ArBotu=0
                     vertiba = bots.VertejumsGalda(spele)
             else:
-                    bots2 = Bots(spele2, (255,  255, 255), 8)
-                    bots2.gajiens(spele)
+                    bots2 = Bots(spele2, (255,  255, 255), 3)
+                    if not bots2.gajiens(spele):
+                        ArBotu=0
                     vertiba = bots2.VertejumsGalda(spele)
-            time.sleep(0.1)
+            time.sleep(0.01)
             grf.update(spele)
             grf.attelovertibu(vertiba)
             pygame.display.update()
@@ -494,25 +496,27 @@ class Bots:
             self.pretineika = (0, 0, 0)
         else:
             self.pretineika = (255, 255, 255)
-        self.parbaudamias = None
-    
             
     def gajiens(self,spele):
         if self.VaiVelIrParastie==False:
-            ArBotu=0
             print('Iestrega Ar Visam damam') 
-        self.minimaxGajiens(spele)       
+            spele.galds.jaunaspele()
+        if self.minimaxGajiens(spele):
+            return True
+        else: return False       
     def minimaxGajiens(self,spele):
         spele2 = deepcopy(spele)
         huh=self.minmax(self.dzilums,spele2,'max')
         #print (huh)
+        if huh is None:
+            return False
         LabakaPos,  LabakaisGajiens,vertiba= huh
         
         self.VeiktGajienu(spele,LabakaPos,LabakaisGajiens)
-        return
+        return True
     def minmax(self, dzilums, spele, Speletajs):
         # zem speletājs domāts min or max gajiens
-        if dzilums == 0:
+        if dzilums <= 0:
             if Speletajs == 'max':
                 vertiba = -math.inf
                 LabakaPos = None
@@ -537,7 +541,7 @@ class Bots:
                         if (gajienavertiba == -math.inf and LabakaPos is None):
                             LabakaPos = (gajieni[0], gajieni[1])
                             LabakaisGajiens = (lauks[0], lauks[1])
-                    print('max  ---',LabakaPos,  LabakaisGajiens, vertiba,'    Dzilums==',dzilums)
+                    print('max a ---',LabakaPos,  LabakaisGajiens, vertiba,'    Dzilums==',dzilums)
                     return LabakaPos,  LabakaisGajiens, vertiba
             else:
                 vertiba = math.inf
@@ -563,7 +567,7 @@ class Bots:
                         if (gajienavertiba == -math.inf and LabakaPos is None):
                             LabakaPos = (gajieni[0], gajieni[1])
                             LabakaisGajiens = (lauks[0], lauks[1])
-                    print('min ---',LabakaPos,  LabakaisGajiens, vertiba,'    Dzilums==',dzilums)        
+                    print('min a---',LabakaPos,  LabakaisGajiens, vertiba,'    Dzilums==',dzilums)        
                     return LabakaPos,  LabakaisGajiens, vertiba
         else:
             if Speletajs == 'max':
@@ -585,6 +589,7 @@ class Bots:
                             h=self.minmax(dzilums-1,spele,'min')
                             if h is not None:
                                 _,_, vertiba=h
+ 
                       #  if vertiba is None:
                       #      continue    
                         self.krasa, self.pretineika = self.pretineika, self.krasa
@@ -600,7 +605,7 @@ class Bots:
                         if (gajienavertiba == -math.inf and LabakaPos is None):
                             LabakaPos = (gajieni[0], gajieni[1])
                             LabakaisGajiens = (lauks[0], lauks[1])
-                    print('max  ---',LabakaPos,  LabakaisGajiens, vertiba,'    Dzilums==',dzilums)
+                    print('max b ---',LabakaPos,  LabakaisGajiens, vertiba,'    Dzilums==',dzilums)
                     return LabakaPos,  LabakaisGajiens, vertiba
             else:
                 vertiba = math.inf
@@ -623,8 +628,7 @@ class Bots:
                        
                             if h is not None:
                                 _,_, vertiba=h
-                            
-                            
+     
                             #print(h)
                        # if vertiba is None:
                         #    continue  
@@ -641,7 +645,7 @@ class Bots:
                         if (gajienavertiba == -math.inf and LabakaPos is None):
                             LabakaPos = (gajieni[0], gajieni[1])
                             LabakaisGajiens = (lauks[0], lauks[1])
-                    print('min ---',LabakaPos,  LabakaisGajiens, vertiba,'    Dzilums==',dzilums)
+                    print('min b---',LabakaPos,  LabakaisGajiens, vertiba,'    Dzilums==',dzilums)
                     return LabakaPos,  LabakaisGajiens, vertiba
 
     def VeiktGajienu(self, spele, PasPos, BeiguPos):
@@ -741,9 +745,13 @@ class Bots:
                         if aiznemts.krasa != self.krasa and aiznemts.dama:
                             Vert -= 13
                         if aiznemts.krasa == self.krasa and y >= SpelesLaukumaIzmers-3 and aiznemts.dama:    
-                            Vert -= 5
-                        if aiznemts.krasa != self.krasa and y >= SpelesLaukumaIzmers-3 and aiznemts.dama:    
                             Vert += 5
+                        if aiznemts.krasa != self.krasa and y >= SpelesLaukumaIzmers-3 and aiznemts.dama:    
+                            Vert -= 5
+                        if aiznemts.krasa == self.krasa and y >= SpelesLaukumaIzmers-3 :    
+                            Vert += 3
+                        if aiznemts.krasa != self.krasa and y >= SpelesLaukumaIzmers-3 :
+                            Vert -= 3   
                         if aiznemts.krasa == self.krasa and y < 4:
                             Vert += 5
                         if aiznemts.krasa != self.krasa and y < 4:
@@ -767,7 +775,10 @@ class Bots:
                             Vert -= 5
                         if aiznemts.krasa != self.krasa and y >= SpelesLaukumaIzmers-3 and aiznemts.dama:    
                             Vert += 5    
-                            
+                        if aiznemts.krasa == self.krasa and y >= SpelesLaukumaIzmers-3 :    
+                            Vert += 3
+                        if aiznemts.krasa != self.krasa and y >= SpelesLaukumaIzmers-3 :
+                            Vert -= 3       
                         if aiznemts.krasa == self.krasa and y < 4:
                             Vert += 5
                         if aiznemts.krasa != self.krasa and y < 4:
